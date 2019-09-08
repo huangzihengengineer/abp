@@ -1,18 +1,20 @@
 using Newtonsoft.Json;
+using NuGet.Versioning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
+using Volo.Abp.Cli.Http;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Json;
 using Volo.Abp.Threading;
 
 namespace Volo.Abp.Cli.NuGet
 {
-    public class NuGetService : ISingletonDependency
+    public class NuGetService : ITransientDependency
     {
         protected IJsonSerializer JsonSerializer { get; }
+
         protected ICancellationTokenProvider CancellationTokenProvider { get; }
 
         public NuGetService(
@@ -23,16 +25,15 @@ namespace Volo.Abp.Cli.NuGet
             CancellationTokenProvider = cancellationTokenProvider;
         }
 
-        public async Task<string> GetLatestVersionOrNullAsync(string packageId, bool includePreviews = false)
+        public async Task<SemanticVersion> GetLatestVersionOrNullAsync(string packageId, bool includePreviews = false, bool includeNightly = false)
         {
-            using (var client = new HttpClient())
+            using (var client = new CliHttpClient())
             {
-                client.Timeout = TimeSpan.FromSeconds(30);
+                var url = includeNightly ?
+                    $"https://www.myget.org/F/abp-nightly/api/v3/flatcontainer/{packageId.ToLowerInvariant()}/index.json" :
+                    $"https://api.nuget.org/v3-flatcontainer/{packageId.ToLowerInvariant()}/index.json";
 
-                var responseMessage = await client.GetAsync(
-                    $"https://api.nuget.org/v3-flatcontainer/{packageId.ToLowerInvariant()}/index.json",
-                    CancellationTokenProvider.Token
-                );
+                var responseMessage = await client.GetAsync(url, CancellationTokenProvider.Token);
 
                 if (!responseMessage.IsSuccessStatusCode)
                 {
@@ -41,16 +42,14 @@ namespace Volo.Abp.Cli.NuGet
 
                 var result = await responseMessage.Content.ReadAsStringAsync();
 
-                var versions = JsonSerializer.Deserialize<NuGetVersionResultDto>(result).Versions;
+                var versions = JsonSerializer.Deserialize<NuGetVersionResultDto>(result).Versions.Select(x => SemanticVersion.Parse(x));
 
-                if (!includePreviews)
+                if (!includePreviews && !includeNightly)
                 {
-                    versions = versions
-                        .Where(x => !x.Contains("beta") && !x.Contains("preview") && !x.Contains("alpha") && !x.Contains("rc"))
-                        .ToList();
+                    versions = versions.Where(x => !x.IsPrerelease);
                 }
 
-                return versions.Count > 0 ? versions.Last() : null;
+                return versions.Any() ? versions.Max() : null;
             }
         }
 

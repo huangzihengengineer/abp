@@ -1,6 +1,7 @@
 ﻿using System;
 using Volo.Abp.Cli.ProjectBuilding.Building;
-using Volo.Abp.Cli.ProjectBuilding.Templates;
+using Volo.Abp.Cli.ProjectBuilding.Templates.App;
+using Volo.Abp.Cli.ProjectBuilding.Templates.MvcModule;
 using Volo.Abp.DependencyInjection;
 
 namespace Volo.Abp.Cli.ProjectBuilding
@@ -9,19 +10,19 @@ namespace Volo.Abp.Cli.ProjectBuilding
     {
         public TemplateInfo GetDefault()
         {
-            return Get(MvcTemplate.TemplateName);
+            return Get(AppTemplate.TemplateName);
         }
 
         public TemplateInfo Get(string name)
         {
             switch (name)
             {
-                case MvcTemplate.TemplateName:
-                    return new MvcTemplate();
-                case MvcModuleTemplate.TemplateName:
-                    return new MvcModuleTemplate();
-                case ServiceTemplate.TemplateName:
-                    return new ServiceTemplate();
+                case AppTemplate.TemplateName:
+                    return new AppTemplate();
+                case AppProTemplate.TemplateName:
+                    return new AppProTemplate();
+                case ModuleTemplate.TemplateName:
+                    return new ModuleTemplate();
                 default:
                     throw new Exception("There is no template found with given name: " + name);
             }

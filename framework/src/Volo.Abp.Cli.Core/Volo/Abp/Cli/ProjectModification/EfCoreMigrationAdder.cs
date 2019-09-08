@@ -1,30 +1,29 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using Volo.Abp.Cli.Utils;
 using Volo.Abp.DependencyInjection;
 
 namespace Volo.Abp.Cli.ProjectModification
 {
     public class EfCoreMigrationAdder : ITransientDependency
     {
-        public void AddMigration(string csprojFile, string module, bool updateDatabase = true)
+        public void AddMigration(string csprojFile, string module, string startupProject, bool updateDatabase = true)
         {
             var moduleName = ParseModuleName(module);
             var migrationName = "Added_" + moduleName + "_Module" + GetUniquePostFix();
 
-            var process = Process.Start("CMD.exe", "/C cd \"" + Path.GetDirectoryName(csprojFile) + "\" & dotnet ef migrations add " + migrationName);
-            process.WaitForExit();
+            CmdHelper.RunCmd("cd \"" + Path.GetDirectoryName(csprojFile) + "\" & dotnet ef migrations add " + migrationName + GetStartupProjectOption(startupProject));
 
             if (updateDatabase)
             {
-                UpdateDatabase(csprojFile);
+                UpdateDatabase(csprojFile, startupProject);
             }
         }
 
-        protected void UpdateDatabase(string csprojFile)
+        protected void UpdateDatabase(string csprojFile, string startupProject)
         {
-            var process = Process.Start("CMD.exe", "/C cd \"" + Path.GetDirectoryName(csprojFile) + "\" & dotnet ef database update");
-            process.WaitForExit();
+            CmdHelper.RunCmd("cd \"" + Path.GetDirectoryName(csprojFile) + "\" & dotnet ef database update" + GetStartupProjectOption(startupProject));
         }
 
         protected virtual string ParseModuleName(string fullModuleName)
@@ -42,6 +41,11 @@ namespace Volo.Abp.Cli.ProjectModification
         protected virtual string GetUniquePostFix()
         {
             return "_" + new Random().Next(1,99999);
+        }
+
+        protected virtual string GetStartupProjectOption(string startupProject)
+        {
+            return startupProject.IsNullOrWhiteSpace() ? "" : $" -s {startupProject}";
         }
     }
 }

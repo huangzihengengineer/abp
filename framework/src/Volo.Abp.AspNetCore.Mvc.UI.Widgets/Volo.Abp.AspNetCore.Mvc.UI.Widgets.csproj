@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\..\common.props" />
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Volo.Abp.AspNetCore.Mvc.UI.Widgets</AssemblyName>
+    <PackageId>Volo.Abp.AspNetCore.Mvc.UI.Widgets</PackageId>
+    <RootNamespace />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Volo.Abp.AspNetCore.Mvc.UI.Bundling\Volo.Abp.AspNetCore.Mvc.UI.Bundling.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Volo\Abp\AspNetCore\Mvc\UI\Widgets\Components\**\*.cshtml" />
+    <Content Remove="Volo\Abp\AspNetCore\Mvc\UI\Widgets\Components\**\*.cshtml" />
+  </ItemGroup>
+
+</Project>
