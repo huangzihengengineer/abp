@@ -50,7 +50,7 @@ abp new Acme.BookStore
       * `ef`: Entity Framework Core.
       * `mongodb`: MongoDB.
   *  `module`: [Module template](Startup-Templates/Module.md). Additional options:
-    * `--no-ui`: Specifies to not include the UI. This makes possible to create service-only modules (a.k.a. microservices - without UI).
+      * `--no-ui`: Specifies to not include the UI. This makes possible to create service-only modules (a.k.a. microservices - without UI).
 * `--output-folder` or `-o`: Specifies the output folder. Default value is the current directory.
 * `--version` or `-v`: Specifies the ABP & template version. It can be a [release tag](https://github.com/abpframework/abp/releases) or a [branch name](https://github.com/abpframework/abp/branches). Uses the latest release if not specified. Most of the times, you will want to use the latest version.
 
@@ -123,6 +123,8 @@ abp update [options]
 #### Options
 
 * `--include-previews` or `-p`: Includes preview, beta and rc packages while checking the latest versions.
+* `--npm`: Only updates NPM packages.
+* `--nuget`: Only updates NuGet packages.
 
 ### help
 

@@ -1,40 +1,20 @@
-import { Pipe, PipeTransform, OnDestroy } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 import { Store } from '@ngxs/store';
+import { Config } from '../models';
 import { ConfigState } from '../states';
-import { takeUntilDestroy } from '../utils';
-import { distinctUntilChanged } from 'rxjs/operators';
 
 @Pipe({
   name: 'abpLocalization',
-  pure: false, // required to update the value
 })
-export class LocalizationPipe implements PipeTransform, OnDestroy {
-  initialized: boolean = false;
-
-  value: string;
-
+export class LocalizationPipe implements PipeTransform {
   constructor(private store: Store) {}
 
-  transform(value: string, ...interpolateParams: string[]): string {
-    if (!this.initialized) {
-      this.initialized = true;
-
-      this.store
-        .select(
-          ConfigState.getCopy(
-            value,
-            ...interpolateParams.reduce((acc, val) => (Array.isArray(val) ? [...acc, ...val] : [...acc, val]), []),
-          ),
-        )
-        .pipe(
-          takeUntilDestroy(this),
-          distinctUntilChanged(),
-        )
-        .subscribe(copy => (this.value = copy));
-    }
-
-    return this.value;
+  transform(value: string | Config.LocalizationWithDefault = '', ...interpolateParams: string[]): string {
+    return this.store.selectSnapshot(
+      ConfigState.getLocalization(
+        value,
+        ...interpolateParams.reduce((acc, val) => (Array.isArray(val) ? [...acc, ...val] : [...acc, val]), []),
+      ),
+    );
   }
-
-  ngOnDestroy() {}
 }

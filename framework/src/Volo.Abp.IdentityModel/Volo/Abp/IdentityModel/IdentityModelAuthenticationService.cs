@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -18,11 +19,11 @@ namespace Volo.Abp.IdentityModel
     public class IdentityModelAuthenticationService : IIdentityModelAuthenticationService, ITransientDependency
     {
         public ILogger<IdentityModelAuthenticationService> Logger { get; set; }
-        protected IdentityClientOptions ClientOptions { get; }
+        protected AbpIdentityClientOptions ClientOptions { get; }
         protected ICancellationTokenProvider CancellationTokenProvider { get; }
 
         public IdentityModelAuthenticationService(
-            IOptions<IdentityClientOptions> options,
+            IOptions<AbpIdentityClientOptions> options,
             ICancellationTokenProvider cancellationTokenProvider)
         {
             CancellationTokenProvider = cancellationTokenProvider;
@@ -91,7 +92,7 @@ namespace Volo.Abp.IdentityModel
                    ClientOptions.IdentityClients.Default;
         }
 
-        protected virtual async Task<DiscoveryResponse> GetDiscoveryResponse(
+        protected virtual async Task<DiscoveryDocumentResponse> GetDiscoveryResponse(
             IdentityClientConfiguration configuration)
         {
             using (var httpClient = new HttpClient())
@@ -108,7 +109,7 @@ namespace Volo.Abp.IdentityModel
         }
 
         protected virtual async Task<TokenResponse> GetTokenResponse(
-            DiscoveryResponse discoveryResponse, 
+            DiscoveryDocumentResponse discoveryResponse, 
             IdentityClientConfiguration configuration)
         {
             using (var httpClient = new HttpClient())
@@ -117,32 +118,62 @@ namespace Volo.Abp.IdentityModel
                 {
                     case OidcConstants.GrantTypes.ClientCredentials:
                         return await httpClient.RequestClientCredentialsTokenAsync(
-                            new ClientCredentialsTokenRequest
-                            {
-                                Address = discoveryResponse.TokenEndpoint,
-                                Scope = configuration.Scope,
-                                ClientId = configuration.ClientId,
-                                ClientSecret = configuration.ClientSecret
-                            },
+                            await CreateClientCredentialsTokenRequestAsync(discoveryResponse, configuration),
                             CancellationTokenProvider.Token
                         );
                     case OidcConstants.GrantTypes.Password:
                         return await httpClient.RequestPasswordTokenAsync(
-                            new PasswordTokenRequest
-                            {
-                                Address = discoveryResponse.TokenEndpoint,
-                                Scope = configuration.Scope,
-                                ClientId = configuration.ClientId,
-                                ClientSecret = configuration.ClientSecret,
-                                UserName = configuration.UserName,
-                                Password = configuration.UserPassword
-                            },
+                            await CreatePasswordTokenRequestAsync(discoveryResponse, configuration),
                             CancellationTokenProvider.Token
                         );
                     default:
                         throw new AbpException("Grant type was not implemented: " + configuration.GrantType);
                 }
             }
+        }
+
+        protected virtual Task<PasswordTokenRequest> CreatePasswordTokenRequestAsync(DiscoveryDocumentResponse discoveryResponse, IdentityClientConfiguration configuration)
+        {
+            var request =  new PasswordTokenRequest
+            {
+                Address = discoveryResponse.TokenEndpoint,
+                Scope = configuration.Scope,
+                ClientId = configuration.ClientId,
+                ClientSecret = configuration.ClientSecret,
+                UserName = configuration.UserName,
+                Password = configuration.UserPassword
+            };
+
+            AddParametersToRequestAsync(configuration, request);
+
+            return Task.FromResult(request);
+        }
+
+        protected virtual Task<ClientCredentialsTokenRequest>  CreateClientCredentialsTokenRequestAsync(
+            DiscoveryDocumentResponse discoveryResponse, 
+            IdentityClientConfiguration configuration)
+        {
+            var request =  new ClientCredentialsTokenRequest
+            {
+                Address = discoveryResponse.TokenEndpoint,
+                Scope = configuration.Scope,
+                ClientId = configuration.ClientId,
+                ClientSecret = configuration.ClientSecret
+            };
+
+            AddParametersToRequestAsync(configuration, request);
+
+            return Task.FromResult(request);
+        }
+
+        protected virtual Task AddParametersToRequestAsync(IdentityClientConfiguration configuration, ProtocolRequest request)
+        {
+            foreach (var pair in configuration.Where(p => p.Key.StartsWith("[o]", StringComparison.OrdinalIgnoreCase)))
+            {
+                request.Parameters[pair.Key] = pair.Value;
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

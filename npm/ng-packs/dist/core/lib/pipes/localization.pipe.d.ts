@@ -1,10 +1,8 @@
-import { PipeTransform, OnDestroy } from '@angular/core';
+import { PipeTransform } from '@angular/core';
 import { Store } from '@ngxs/store';
-export declare class LocalizationPipe implements PipeTransform, OnDestroy {
+import { Config } from '../models';
+export declare class LocalizationPipe implements PipeTransform {
     private store;
-    initialized: boolean;
-    value: string;
     constructor(store: Store);
-    transform(value: string, ...interpolateParams: string[]): string;
-    ngOnDestroy(): void;
+    transform(value?: string | Config.LocalizationWithDefault, ...interpolateParams: string[]): string;
 }

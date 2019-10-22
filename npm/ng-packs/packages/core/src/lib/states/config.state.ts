@@ -1,13 +1,14 @@
-import { State, Selector, createSelector, Action, StateContext, Store } from '@ngxs/store';
-import { Config, ABP } from '../models';
-import { GetAppConfiguration, PatchRouteByName } from '../actions/config.actions';
-import { ApplicationConfigurationService } from '../services/application-configuration.service';
-import { tap, switchMap } from 'rxjs/operators';
-import snq from 'snq';
-import { SetLanguage } from '../actions';
-import { SessionState } from './session.state';
+import { Action, createSelector, Selector, State, StateContext, Store } from '@ngxs/store';
 import { of } from 'rxjs';
-import { setChildRoute, sortRoutes, organizeRoutes } from '../utils/route-utils';
+import { switchMap, tap } from 'rxjs/operators';
+import snq from 'snq';
+import { GetAppConfiguration, PatchRouteByName } from '../actions/config.actions';
+import { SetLanguage } from '../actions/session.actions';
+import { ABP } from '../models/common';
+import { Config } from '../models/config';
+import { ApplicationConfigurationService } from '../services/application-configuration.service';
+import { organizeRoutes } from '../utils/route-utils';
+import { SessionState } from './session.state';
 
 @State<Config.State>({
   name: 'ConfigState',
@@ -20,14 +21,14 @@ export class ConfigState {
   }
 
   @Selector()
-  static getApplicationInfo(state: Config.State) {
-    return state.environment.application || {};
+  static getApplicationInfo(state: Config.State): Config.Application {
+    return state.environment.application || ({} as Config.Application);
   }
 
   static getOne(key: string) {
     const selector = createSelector(
       [ConfigState],
-      function(state: Config.State) {
+      (state: Config.State) => {
         return state[key];
       },
     );
@@ -46,7 +47,7 @@ export class ConfigState {
 
     const selector = createSelector(
       [ConfigState],
-      function(state: Config.State) {
+      (state: Config.State) => {
         return (keys as string[]).reduce((acc, val) => {
           if (acc) {
             return acc[val];
@@ -60,10 +61,28 @@ export class ConfigState {
     return selector;
   }
 
+  static getRoute(path?: string, name?: string) {
+    const selector = createSelector(
+      [ConfigState],
+      (state: Config.State) => {
+        const { flattedRoutes } = state;
+        return (flattedRoutes as ABP.FullRoute[]).find(route => {
+          if (path && route.path === path) {
+            return route;
+          } else if (name && route.name === name) {
+            return route;
+          }
+        });
+      },
+    );
+
+    return selector;
+  }
+
   static getApiUrl(key?: string) {
     const selector = createSelector(
       [ConfigState],
-      function(state: Config.State): string {
+      (state: Config.State): string => {
         return state.environment.apis[key || 'default'].url;
       },
     );
@@ -74,57 +93,64 @@ export class ConfigState {
   static getSetting(key: string) {
     const selector = createSelector(
       [ConfigState],
-      function(state: Config.State) {
+      (state: Config.State) => {
         return snq(() => state.setting.values[key]);
       },
     );
-
     return selector;
   }
 
-  static getGrantedPolicy(condition: string = '') {
-    const keys = condition
-      .replace(/\(|\)|\!|\s/g, '')
-      .split(/\|\||&&/)
-      .filter(key => key);
-
+  static getSettings(keyword?: string) {
     const selector = createSelector(
       [ConfigState],
-      function(state: Config.State): boolean {
-        if (!keys.length) return true;
+      (state: Config.State) => {
+        if (keyword) {
+          const keys = snq(() => Object.keys(state.setting.values).filter(key => key.indexOf(keyword) > -1), []);
 
-        const getPolicy = key => snq(() => state.auth.grantedPolicies[key], false);
-        if (keys.length > 1) {
-          keys.forEach(key => {
-            const value = getPolicy(key);
-            condition = condition.replace(key, value);
-          });
-
-          // tslint:disable-next-line: no-eval
-          return eval(`!!${condition}`);
+          if (keys.length) {
+            return keys.reduce((acc, key) => ({ ...acc, [key]: state.setting.values[key] }), {});
+          }
         }
 
-        return getPolicy(condition);
+        return snq(() => state.setting.values, {});
+      },
+    );
+    return selector;
+  }
+
+  static getGrantedPolicy(key: string) {
+    const selector = createSelector(
+      [ConfigState],
+      (state: Config.State): boolean => {
+        if (!key) return true;
+        return snq(() => state.auth.grantedPolicies[key], false);
       },
     );
 
     return selector;
   }
 
-  static getCopy(key: string, ...interpolateParams: string[]) {
+  static getLocalization(key: string | Config.LocalizationWithDefault, ...interpolateParams: string[]) {
+    let defaultValue: string;
+
+    if (typeof key !== 'string') {
+      defaultValue = key.defaultValue;
+      key = key.key;
+    }
+
     if (!key) key = '';
 
     const keys = key.split('::') as string[];
     const selector = createSelector(
       [ConfigState],
-      function(state: Config.State) {
-        if (!state.localization) return key;
+      (state: Config.State) => {
+        if (!state.localization) return defaultValue || key;
 
         const { defaultResourceName } = state.environment.localization;
         if (keys[0] === '') {
           if (!defaultResourceName) {
             throw new Error(
-              `Please check your environment. May you forget set defaultResourceName? 
+              `Please check your environment. May you forget set defaultResourceName?
               Here is the example:
                { production: false,
                  localization: {
@@ -137,7 +163,7 @@ export class ConfigState {
           keys[0] = snq(() => defaultResourceName);
         }
 
-        let copy = keys.reduce((acc, val) => {
+        let localization = (keys as any).reduce((acc, val) => {
           if (acc) {
             return acc[val];
           }
@@ -146,13 +172,14 @@ export class ConfigState {
         }, state.localization.values);
 
         interpolateParams = interpolateParams.filter(params => params != null);
-        if (copy && interpolateParams && interpolateParams.length) {
+        if (localization && interpolateParams && interpolateParams.length) {
           interpolateParams.forEach(param => {
-            copy = copy.replace(/[\'\"]?\{[\d]+\}[\'\"]?/, param);
+            localization = localization.replace(/[\'\"]?\{[\d]+\}[\'\"]?/, param);
           });
         }
 
-        return copy || key;
+        if (typeof localization !== 'string') localization = '';
+        return localization || defaultValue || key;
       },
     );
 
@@ -169,11 +196,15 @@ export class ConfigState {
           ...configuration,
         }),
       ),
-      switchMap(configuration =>
-        this.store.selectSnapshot(SessionState.getLanguage)
-          ? of(null)
-          : dispatch(new SetLanguage(snq(() => configuration.setting.values['Abp.Localization.DefaultLanguage']))),
-      ),
+      switchMap(configuration => {
+        let defaultLang: string = configuration.setting.values['Abp.Localization.DefaultLanguage'];
+
+        if (defaultLang.includes(';')) {
+          defaultLang = defaultLang.split(';')[0];
+        }
+
+        return this.store.selectSnapshot(SessionState.getLanguage) ? of(null) : dispatch(new SetLanguage(defaultLang));
+      }),
     );
   }
 
@@ -195,18 +226,16 @@ function patchRouteDeep(
   routes: ABP.FullRoute[],
   name: string,
   newValue: Partial<ABP.FullRoute>,
-  parentUrl: string = null,
+  parentUrl: string = '',
 ): ABP.FullRoute[] {
   routes = routes.map(route => {
     if (route.name === name) {
-      if (newValue.path) {
-        newValue.url = `${parentUrl}/${newValue.path}`;
-      }
+      newValue.url = `${parentUrl}/${(!newValue.path && newValue.path === '' ? route.path : newValue.path) || ''}`;
 
       if (newValue.children && newValue.children.length) {
         newValue.children = newValue.children.map(child => ({
           ...child,
-          url: `${parentUrl}/${route.path}/${child.path}`,
+          url: `${newValue.url}/${child.path}`.replace('//', '/'),
         }));
       }
 

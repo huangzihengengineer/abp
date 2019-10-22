@@ -1,6 +1,6 @@
 import { ABP } from '@abp/ng.core';
 import { ConfirmationService, Toaster } from '@abp/ng.theme.shared';
-import { Component, TemplateRef, ViewChild } from '@angular/core';
+import { Component, TemplateRef, ViewChild, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Select, Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
@@ -13,7 +13,7 @@ import { IdentityState } from '../../states/identity.state';
   selector: 'abp-roles',
   templateUrl: './roles.component.html',
 })
-export class RolesComponent {
+export class RolesComponent implements OnInit {
   @Select(IdentityState.getRoles)
   data$: Observable<Identity.RoleItem[]>;
 
@@ -26,22 +26,28 @@ export class RolesComponent {
 
   isModalVisible: boolean;
 
-  visiblePermissions: boolean = false;
+  visiblePermissions = false;
 
   providerKey: string;
 
-  pageQuery: ABP.PageQueryParams = {
-    sorting: 'name',
-  };
+  pageQuery: ABP.PageQueryParams = {};
 
-  loading: boolean = false;
+  loading = false;
 
-  modalBusy: boolean = false;
+  modalBusy = false;
+
+  sortOrder = '';
+
+  sortKey = '';
 
   @ViewChild('modalContent', { static: false })
   modalContent: TemplateRef<any>;
 
   constructor(private confirmationService: ConfirmationService, private fb: FormBuilder, private store: Store) {}
+
+  ngOnInit() {
+    this.get();
+  }
 
   onSearch(value) {
     this.pageQuery.filter = value;

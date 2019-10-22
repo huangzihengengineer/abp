@@ -1,6 +1,10 @@
 import { Action, Selector, State, StateContext } from '@ngxs/store';
+import { from } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { GetAppConfiguration } from '../actions/config.actions';
 import { SetLanguage, SetTenant } from '../actions/session.actions';
 import { ABP, Session } from '../models';
+import { LocalizationService } from '../services/localization.service';
 
 @State<Session.State>({
   name: 'SessionState',
@@ -17,17 +21,21 @@ export class SessionState {
     return tenant;
   }
 
-  constructor() {}
+  constructor(private localizationService: LocalizationService) {}
 
   @Action(SetLanguage)
-  setLanguage({ patchState }: StateContext<Session.State>, { payload }: SetLanguage) {
+  setLanguage({ patchState, dispatch }: StateContext<Session.State>, { payload }: SetLanguage) {
     patchState({
       language: payload,
     });
+
+    return dispatch(new GetAppConfiguration()).pipe(
+      switchMap(() => from(this.localizationService.registerLocale(payload))),
+    );
   }
 
   @Action(SetTenant)
-  setTenantId({ patchState }: StateContext<Session.State>, { payload }: SetTenant) {
+  setTenant({ patchState }: StateContext<Session.State>, { payload }: SetTenant) {
     patchState({
       tenant: payload,
     });

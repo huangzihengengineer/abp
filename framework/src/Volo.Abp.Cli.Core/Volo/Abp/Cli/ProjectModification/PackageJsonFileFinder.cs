@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Volo.Abp.DependencyInjection;
 
 namespace Volo.Abp.Cli.ProjectModification
@@ -27,7 +26,14 @@ namespace Volo.Abp.Cli.ProjectModification
         {
             var directory = Path.GetDirectoryName(path);
 
-            return Directory.GetFiles(directory, "*.csproj", searchOption: SearchOption.TopDirectoryOnly).Any();
+            if (directory == null)
+            {
+                return false;
+            }
+
+            return 
+                Directory.GetFiles(directory, "*.csproj", searchOption: SearchOption.TopDirectoryOnly).Any() ||
+                File.Exists(Path.Combine(directory, "angular.json"));
         }
     }
 }

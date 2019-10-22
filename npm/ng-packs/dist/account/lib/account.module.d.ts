@@ -1,5 +1,9 @@
-import { ModuleWithProviders } from '@angular/core';
+import { Provider } from '@angular/core';
 import { Options } from './models/options';
 export declare class AccountModule {
-    static forRoot(options?: Options): ModuleWithProviders;
 }
+/**
+ *
+ * @deprecated since version 0.9
+ */
+export declare function AccountProviders(options?: Options): Provider[];

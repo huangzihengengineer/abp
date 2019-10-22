@@ -8,20 +8,26 @@ import { NgxsStoragePluginModule } from '@ngxs/storage-plugin';
 import { NgxsModule, NGXS_PLUGINS } from '@ngxs/store';
 import { DynamicLayoutComponent } from './components/dynamic-layout.component';
 import { RouterOutletComponent } from './components/router-outlet.component';
+import { AutofocusDirective } from './directives/autofocus.directive';
+import { InputEventDebounceDirective } from './directives/debounce.directive';
+import { EllipsisDirective } from './directives/ellipsis.directive';
+import { FormSubmitDirective } from './directives/form-submit.directive';
 import { PermissionDirective } from './directives/permission.directive';
+import { ClickEventStopPropagationDirective } from './directives/stop-propagation.directive';
 import { VisibilityDirective } from './directives/visibility.directive';
 import { ApiInterceptor } from './interceptors/api.interceptor';
 import { ABP } from './models/common';
 import { LocalizationPipe } from './pipes/localization.pipe';
-import { ConfigPlugin, NGXS_CONFIG_PLUGIN_OPTIONS } from './plugins/config.plugin';
+import { SortPipe } from './pipes/sort.pipe';
+import { LocaleProvider } from './providers/locale.provider';
 import { ConfigState } from './states/config.state';
 import { ProfileState } from './states/profile.state';
 import { SessionState } from './states/session.state';
-import { getInitialData } from './utils/initial-utils';
-import { EllipsisDirective } from './directives/ellipsis.directive';
-import { AutofocusDirective } from './directives/autofocus.directive';
-import { InputEventDebounceDirective } from './directives/debounce.directive';
-import { ClickEventStopPropagationDirective } from './directives/stop-propagation.directive';
+import { getInitialData, localeInitializer } from './utils/initial-utils';
+import { ConfigPlugin, NGXS_CONFIG_PLUGIN_OPTIONS } from './plugins/config/config.plugin';
+import { ForDirective } from './directives/for.directive';
+import { AbstractNgModelComponent } from './abstracts/ng-model.component';
+import { TableSortDirective } from './directives/table-sort.directive';
 
 @NgModule({
   imports: [
@@ -39,11 +45,16 @@ import { ClickEventStopPropagationDirective } from './directives/stop-propagatio
     DynamicLayoutComponent,
     AutofocusDirective,
     EllipsisDirective,
+    ForDirective,
+    FormSubmitDirective,
+    TableSortDirective,
     LocalizationPipe,
+    SortPipe,
     PermissionDirective,
     VisibilityDirective,
     InputEventDebounceDirective,
     ClickEventStopPropagationDirective,
+    AbstractNgModelComponent,
   ],
   exports: [
     CommonModule,
@@ -55,12 +66,17 @@ import { ClickEventStopPropagationDirective } from './directives/stop-propagatio
     DynamicLayoutComponent,
     AutofocusDirective,
     EllipsisDirective,
+    ForDirective,
+    FormSubmitDirective,
     LocalizationPipe,
+    SortPipe,
+    TableSortDirective,
     PermissionDirective,
     VisibilityDirective,
     InputEventDebounceDirective,
     LocalizationPipe,
     ClickEventStopPropagationDirective,
+    AbstractNgModelComponent,
   ],
   providers: [LocalizationPipe],
   entryComponents: [RouterOutletComponent, DynamicLayoutComponent],
@@ -70,6 +86,7 @@ export class CoreModule {
     return {
       ngModule: CoreModule,
       providers: [
+        LocaleProvider,
         {
           provide: NGXS_PLUGINS,
           useClass: ConfigPlugin,
@@ -89,6 +106,12 @@ export class CoreModule {
           multi: true,
           deps: [Injector],
           useFactory: getInitialData,
+        },
+        {
+          provide: APP_INITIALIZER,
+          multi: true,
+          deps: [Injector],
+          useFactory: localeInitializer,
         },
       ],
     };

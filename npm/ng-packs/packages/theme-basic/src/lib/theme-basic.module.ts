@@ -1,22 +1,22 @@
 import { CoreModule } from '@abp/ng.core';
+import { ThemeSharedModule } from '@abp/ng.theme.shared';
 import { NgModule } from '@angular/core';
 import { NgbCollapseModule, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import { NgxValidateCoreModule } from '@ngx-validate/core';
+import { NgxsModule } from '@ngxs/store';
+import { ToastModule } from 'primeng/toast';
 import { AccountLayoutComponent } from './components/account-layout/account-layout.component';
 import { ApplicationLayoutComponent } from './components/application-layout/application-layout.component';
 import { EmptyLayoutComponent } from './components/empty-layout/empty-layout.component';
 import { LayoutComponent } from './components/layout/layout.component';
-import { ProfileComponent } from './components/profile/profile.component';
-import { ThemeSharedModule } from '@abp/ng.theme.shared';
-import { ToastModule } from 'primeng/toast';
-import { NgxValidateCoreModule } from '@ngx-validate/core';
-import { NgxsModule } from '@ngxs/store';
 import { LayoutState } from './states/layout.state';
+import { ValidationErrorComponent } from './components/validation-error/validation-error.component';
+import { InitialService } from './services/initial.service';
 
 export const LAYOUTS = [ApplicationLayoutComponent, AccountLayoutComponent, EmptyLayoutComponent];
 
 @NgModule({
-  declarations: [...LAYOUTS, LayoutComponent, ChangePasswordComponent, ProfileComponent],
+  declarations: [...LAYOUTS, LayoutComponent, ValidationErrorComponent],
   imports: [
     CoreModule,
     ThemeSharedModule,
@@ -25,8 +25,23 @@ export const LAYOUTS = [ApplicationLayoutComponent, AccountLayoutComponent, Empt
     ToastModule,
     NgxValidateCoreModule,
     NgxsModule.forFeature([LayoutState]),
+    NgxValidateCoreModule.forRoot({
+      targetSelector: '.form-group',
+      blueprints: {
+        email: 'AbpAccount::ThisFieldIsNotAValidEmailAddress.',
+        max: 'AbpAccount::ThisFieldMustBeBetween{0}And{1}[{{ min }},{{ max }}]',
+        maxlength: 'AbpAccount::ThisFieldMustBeAStringWithAMaximumLengthOf{1}[{{ requiredLength }}]',
+        min: 'AbpAccount::ThisFieldMustBeBetween{0}And{1}[{{ min }},{{ max }}]',
+        minlength: 'AbpAccount::ThisFieldMustBeAStringOrArrayTypeWithAMinimumLengthOf[{{ min }},{{ max }}]',
+        required: 'AbpAccount::ThisFieldIsRequired.',
+        passwordMismatch: 'AbpIdentity::Identity.PasswordConfirmationFailed'
+      },
+      errorTemplate: ValidationErrorComponent
+    })
   ],
   exports: [...LAYOUTS],
-  entryComponents: [...LAYOUTS],
+  entryComponents: [...LAYOUTS, ValidationErrorComponent]
 })
-export class ThemeBasicModule {}
+export class ThemeBasicModule {
+  constructor(private initialService: InitialService) {}
+}

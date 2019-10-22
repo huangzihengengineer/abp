@@ -4,12 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Volo.Abp.AspNetCore.Mvc.UI.RazorPages;
 using Volo.Abp.Domain.Entities;
 
 namespace Volo.Abp.Identity.Web.Pages.Identity.Users
 {
-    public class EditModalModel : AbpPageModel
+    public class EditModalModel : IdentityPageModel
     {
         [BindProperty]
         public UserInfoViewModel UserInfo { get; set; }
@@ -72,6 +71,10 @@ namespace Volo.Abp.Identity.Web.Pages.Identity.Users
 
             [StringLength(IdentityUserConsts.MaxSurnameLength)]
             public string Surname { get; set; }
+
+            [StringLength(IdentityUserConsts.MaxPasswordLength)]
+            [DataType(DataType.Password)]
+            public string Password { get; set; }
 
             [Required]
             [EmailAddress]

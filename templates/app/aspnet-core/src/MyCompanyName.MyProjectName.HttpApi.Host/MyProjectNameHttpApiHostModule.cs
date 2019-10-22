@@ -7,14 +7,17 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using MyCompanyName.MyProjectName.EntityFrameworkCore;
 using MyCompanyName.MyProjectName.MultiTenancy;
 using StackExchange.Redis;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.MultiTenancy;
 using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy;
 using Volo.Abp.Autofac;
+using Volo.Abp.Caching;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 using Volo.Abp.VirtualFileSystem;
@@ -25,6 +28,7 @@ namespace MyCompanyName.MyProjectName
         typeof(MyProjectNameHttpApiModule),
         typeof(AbpAutofacModule),
         typeof(AbpAspNetCoreMultiTenancyModule),
+        typeof(AbpAspNetCoreMvcUiMultiTenancyModule),
         typeof(MyProjectNameApplicationModule),
         typeof(MyProjectNameEntityFrameworkCoreDbMigrationsModule)
         )]
@@ -39,11 +43,20 @@ namespace MyCompanyName.MyProjectName
 
             ConfigureConventionalControllers();
             ConfigureAuthentication(context, configuration);
-            ConfigureSwagger(context);
             ConfigureLocalization();
+            ConfigureCache(configuration);
             ConfigureVirtualFileSystem(context);
             ConfigureRedis(context, configuration, hostingEnvironment);
             ConfigureCors(context, configuration);
+            ConfigureSwaggerServices(context);
+        }
+
+        private void ConfigureCache(IConfiguration configuration)
+        {
+            Configure<AbpDistributedCacheOptions>(options =>
+            {
+                options.KeyPrefix = "MyProjectName:";
+            });
         }
 
         private void ConfigureVirtualFileSystem(ServiceConfigurationContext context)
@@ -52,7 +65,7 @@ namespace MyCompanyName.MyProjectName
 
             if (hostingEnvironment.IsDevelopment())
             {
-                Configure<VirtualFileSystemOptions>(options =>
+                Configure<AbpVirtualFileSystemOptions>(options =>
                 {
                     options.FileSets.ReplaceEmbeddedByPhysical<MyProjectNameDomainSharedModule>(Path.Combine(hostingEnvironment.ContentRootPath, $"..{Path.DirectorySeparatorChar}MyCompanyName.MyProjectName.Domain.Shared"));
                     options.FileSets.ReplaceEmbeddedByPhysical<MyProjectNameDomainModule>(Path.Combine(hostingEnvironment.ContentRootPath, $"..{Path.DirectorySeparatorChar}MyCompanyName.MyProjectName.Domain"));
@@ -70,7 +83,7 @@ namespace MyCompanyName.MyProjectName
             });
         }
 
-        private void ConfigureAuthentication(ServiceConfigurationContext context, IConfigurationRoot configuration)
+        private void ConfigureAuthentication(ServiceConfigurationContext context, IConfiguration configuration)
         {
             context.Services.AddAuthentication("Bearer")
                 .AddIdentityServerAuthentication(options =>
@@ -81,12 +94,12 @@ namespace MyCompanyName.MyProjectName
                 });
         }
 
-        private static void ConfigureSwagger(ServiceConfigurationContext context)
+        private static void ConfigureSwaggerServices(ServiceConfigurationContext context)
         {
             context.Services.AddSwaggerGen(
                 options =>
                 {
-                    options.SwaggerDoc("v1", new Info {Title = "MyProjectName API", Version = "v1"});
+                    options.SwaggerDoc("v1", new OpenApiInfo {Title = "MyProjectName API", Version = "v1"});
                     options.DocInclusionPredicate((docName, description) => true);
                 });
         }
@@ -105,8 +118,8 @@ namespace MyCompanyName.MyProjectName
 
         private void ConfigureRedis(
             ServiceConfigurationContext context,
-            IConfigurationRoot configuration,
-            IHostingEnvironment hostingEnvironment)
+            IConfiguration configuration,
+            IWebHostEnvironment hostingEnvironment)
         {
             context.Services.AddStackExchangeRedisCache(options =>
             {
@@ -122,7 +135,7 @@ namespace MyCompanyName.MyProjectName
             }
         }
 
-        private void ConfigureCors(ServiceConfigurationContext context, IConfigurationRoot configuration)
+        private void ConfigureCors(ServiceConfigurationContext context, IConfiguration configuration)
         {
             context.Services.AddCors(options =>
             {
@@ -148,20 +161,24 @@ namespace MyCompanyName.MyProjectName
         {
             var app = context.GetApplicationBuilder();
 
-            app.UseCors(DefaultCorsPolicyName);
-
+            app.UseCorrelationId();
             app.UseVirtualFiles();
+            app.UseRouting();
+            app.UseCors(DefaultCorsPolicyName);
             app.UseAuthentication();
+            app.UseAuthorization();
             if (MultiTenancyConsts.IsEnabled)
             {
                 app.UseMultiTenancy();
             }
             app.UseAbpRequestLocalization();
+
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "MyProjectName API");
             });
+
             app.UseAuditing();
             app.UseMvcWithDefaultRouteAndArea();
         }

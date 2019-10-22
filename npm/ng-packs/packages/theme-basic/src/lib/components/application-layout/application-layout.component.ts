@@ -59,10 +59,6 @@ export class ApplicationLayoutComponent implements AfterViewInit, OnDestroy {
   @ViewChildren('navbarRootDropdown', { read: NgbDropdown })
   navbarRootDropdowns: QueryList<NgbDropdown>;
 
-  isOpenChangePassword: boolean = false;
-
-  isOpenProfile: boolean = false;
-
   isDropdownChildDynamic: boolean;
 
   get visibleRoutes$(): Observable<ABP.FullRoute[]> {
@@ -147,7 +143,6 @@ export class ApplicationLayoutComponent implements AfterViewInit, OnDestroy {
 
   onChangeLang(cultureName: string) {
     this.store.dispatch(new SetLanguage(cultureName));
-    this.store.dispatch(new GetAppConfiguration());
   }
 
   logout() {

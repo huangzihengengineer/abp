@@ -1,5 +1,5 @@
 import { Config } from './config';
-import { eLayoutType } from '../enums';
+import { eLayoutType } from '../enums/common';
 export declare namespace ABP {
     interface Root {
         environment: Partial<Config.Environment>;
@@ -35,5 +35,8 @@ export declare namespace ABP {
     interface BasicItem {
         id: string;
         name: string;
+    }
+    interface Dictionary<T = any> {
+        [key: string]: T;
     }
 }

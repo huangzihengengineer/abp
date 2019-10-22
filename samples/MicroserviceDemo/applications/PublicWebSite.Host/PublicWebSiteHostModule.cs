@@ -40,7 +40,7 @@ namespace PublicWebSite.Host
                 options.Languages.Add(new LanguageInfo("en", "en", "English"));
             });
 
-            Configure<NavigationOptions>(options =>
+            Configure<AbpNavigationOptions>(options =>
             {
                 options.MenuContributors.Add(new PublicWebSiteMenuContributor());
             });
@@ -89,6 +89,7 @@ namespace PublicWebSite.Host
 
             app.UseCorrelationId();
             app.UseVirtualFiles();
+            app.UseRouting();
             app.UseAuthentication();
             app.UseAbpRequestLocalization();
             app.UseMvcWithDefaultRouteAndArea();

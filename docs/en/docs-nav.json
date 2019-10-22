@@ -82,10 +82,12 @@
           "text": "Validation"
         },
         {
-          "text": "Authorization"
+          "text": "Authorization",
+          "path": "Authorization.md"
         },
         {
-          "text": "Caching"
+          "text": "Caching",
+          "path": "Caching.md"
         },
         {
           "text": "Auditing"
@@ -114,6 +116,10 @@
     {
       "text": "Services",
       "items": [
+        {
+          "text": "Object to object mapping",
+          "path": "Object-To-Object-Mapping.md"
+        },
         {
           "text": "Object Serialization"
         },
@@ -245,11 +251,21 @@
       "items": [
         {
           "text": "Entity Framework Core Integration",
-          "path": "Entity-Framework-Core.md"
+          "path": "Entity-Framework-Core.md",
+          "items": [            
+            {
+              "text": "PostgreSQL Integration",
+              "path": "Best-Practices/PostgreSQL-Integration.md"
+            }
+          ]
         },
         {
           "text": "MongoDB Integration",
           "path": "MongoDB.md"
+        },
+        {
+          "text": "Dapper Integration",
+          "path": "Dapper.md"
         }
       ]
     },
@@ -282,7 +298,7 @@
         },
         {
           "text": "Module",
-          "path": "Startup-Templates/Application.md"
+          "path": "Startup-Templates/Module.md"
         }
       ]
     },

@@ -1,0 +1,33 @@
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+import { animate, animation, trigger, state, style, transition, useAnimation } from '@angular/animations';
+/** @type {?} */
+export var collapseY = animation([
+    style({ height: '*', overflow: 'hidden', 'box-sizing': 'border-box' }),
+    animate('{{ time }} {{ easing }}', style({ height: '0', padding: '0px' }))
+], { params: { time: '350ms', easing: 'ease' } });
+/** @type {?} */
+export var collapseX = animation([
+    style({ width: '*', overflow: 'hidden', 'box-sizing': 'border-box' }),
+    animate('{{ time }} {{ easing }}', style({ width: '0', padding: '0px' }))
+], { params: { time: '350ms', easing: 'ease' } });
+/** @type {?} */
+export var expandY = animation([
+    style({ height: '0', overflow: 'hidden', 'box-sizing': 'border-box' }),
+    animate('{{ time }} {{ easing }}', style({ height: '*', padding: '*' }))
+], { params: { time: '350ms', easing: 'ease' } });
+/** @type {?} */
+export var expandX = animation([
+    style({ width: '0', overflow: 'hidden', 'box-sizing': 'border-box' }),
+    animate('{{ time }} {{ easing }}', style({ width: '*', padding: '*' }))
+], { params: { time: '350ms', easing: 'ease' } });
+/** @type {?} */
+export var collapse = trigger('collapse', [
+    state('collapsed', style({ height: '0', overflow: 'hidden' })),
+    state('expanded', style({ height: '*', overflow: 'hidden' })),
+    transition('expanded => collapsed', useAnimation(collapseY)),
+    transition('collapsed => expanded', useAnimation(expandY))
+]);
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY29sbGFwc2UuYW5pbWF0aW9ucy5qcyIsInNvdXJjZVJvb3QiOiJuZzovL0BhYnAvbmcudGhlbWUuc2hhcmVkLyIsInNvdXJjZXMiOlsibGliL2FuaW1hdGlvbnMvY29sbGFwc2UuYW5pbWF0aW9ucy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7O0FBQUEsT0FBTyxFQUFFLE9BQU8sRUFBRSxTQUFTLEVBQUUsT0FBTyxFQUFFLEtBQUssRUFBRSxLQUFLLEVBQUUsVUFBVSxFQUFFLFlBQVksRUFBRSxNQUFNLHFCQUFxQixDQUFDOztBQUUxRyxNQUFNLEtBQU8sU0FBUyxHQUFHLFNBQVMsQ0FDaEM7SUFDRSxLQUFLLENBQUMsRUFBRSxNQUFNLEVBQUUsR0FBRyxFQUFFLFFBQVEsRUFBRSxRQUFRLEVBQUUsWUFBWSxFQUFFLFlBQVksRUFBRSxDQUFDO0lBQ3RFLE9BQU8sQ0FBQyx5QkFBeUIsRUFBRSxLQUFLLENBQUMsRUFBRSxNQUFNLEVBQUUsR0FBRyxFQUFFLE9BQU8sRUFBRSxLQUFLLEVBQUUsQ0FBQyxDQUFDO0NBQzNFLEVBQ0QsRUFBRSxNQUFNLEVBQUUsRUFBRSxJQUFJLEVBQUUsT0FBTyxFQUFFLE1BQU0sRUFBRSxNQUFNLEVBQUUsRUFBRSxDQUM5Qzs7QUFFRCxNQUFNLEtBQU8sU0FBUyxHQUFHLFNBQVMsQ0FDaEM7SUFDRSxLQUFLLENBQUMsRUFBRSxLQUFLLEVBQUUsR0FBRyxFQUFFLFFBQVEsRUFBRSxRQUFRLEVBQUUsWUFBWSxFQUFFLFlBQVksRUFBRSxDQUFDO0lBQ3JFLE9BQU8sQ0FBQyx5QkFBeUIsRUFBRSxLQUFLLENBQUMsRUFBRSxLQUFLLEVBQUUsR0FBRyxFQUFFLE9BQU8sRUFBRSxLQUFLLEVBQUUsQ0FBQyxDQUFDO0NBQzFFLEVBQ0QsRUFBRSxNQUFNLEVBQUUsRUFBRSxJQUFJLEVBQUUsT0FBTyxFQUFFLE1BQU0sRUFBRSxNQUFNLEVBQUUsRUFBRSxDQUM5Qzs7QUFFRCxNQUFNLEtBQU8sT0FBTyxHQUFHLFNBQVMsQ0FDOUI7SUFDRSxLQUFLLENBQUMsRUFBRSxNQUFNLEVBQUUsR0FBRyxFQUFFLFFBQVEsRUFBRSxRQUFRLEVBQUUsWUFBWSxFQUFFLFlBQVksRUFBRSxDQUFDO0lBQ3RFLE9BQU8sQ0FBQyx5QkFBeUIsRUFBRSxLQUFLLENBQUMsRUFBRSxNQUFNLEVBQUUsR0FBRyxFQUFFLE9BQU8sRUFBRSxHQUFHLEVBQUUsQ0FBQyxDQUFDO0NBQ3pFLEVBQ0QsRUFBRSxNQUFNLEVBQUUsRUFBRSxJQUFJLEVBQUUsT0FBTyxFQUFFLE1BQU0sRUFBRSxNQUFNLEVBQUUsRUFBRSxDQUM5Qzs7QUFFRCxNQUFNLEtBQU8sT0FBTyxHQUFHLFNBQVMsQ0FDOUI7SUFDRSxLQUFLLENBQUMsRUFBRSxLQUFLLEVBQUUsR0FBRyxFQUFFLFFBQVEsRUFBRSxRQUFRLEVBQUUsWUFBWSxFQUFFLFlBQVksRUFBRSxDQUFDO0lBQ3JFLE9BQU8sQ0FBQyx5QkFBeUIsRUFBRSxLQUFLLENBQUMsRUFBRSxLQUFLLEVBQUUsR0FBRyxFQUFFLE9BQU8sRUFBRSxHQUFHLEVBQUUsQ0FBQyxDQUFDO0NBQ3hFLEVBQ0QsRUFBRSxNQUFNLEVBQUUsRUFBRSxJQUFJLEVBQUUsT0FBTyxFQUFFLE1BQU0sRUFBRSxNQUFNLEVBQUUsRUFBRSxDQUM5Qzs7QUFFRCxNQUFNLEtBQU8sUUFBUSxHQUFHLE9BQU8sQ0FBQyxVQUFVLEVBQUU7SUFDMUMsS0FBSyxDQUFDLFdBQVcsRUFBRSxLQUFLLENBQUMsRUFBRSxNQUFNLEVBQUUsR0FBRyxFQUFFLFFBQVEsRUFBRSxRQUFRLEVBQUUsQ0FBQyxDQUFDO0lBQzlELEtBQUssQ0FBQyxVQUFVLEVBQUUsS0FBSyxDQUFDLEVBQUUsTUFBTSxFQUFFLEdBQUcsRUFBRSxRQUFRLEVBQUUsUUFBUSxFQUFFLENBQUMsQ0FBQztJQUM3RCxVQUFVLENBQUMsdUJBQXVCLEVBQUUsWUFBWSxDQUFDLFNBQVMsQ0FBQyxDQUFDO0lBQzVELFVBQVUsQ0FBQyx1QkFBdUIsRUFBRSxZQUFZLENBQUMsT0FBTyxDQUFDLENBQUM7Q0FDM0QsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IGFuaW1hdGUsIGFuaW1hdGlvbiwgdHJpZ2dlciwgc3RhdGUsIHN0eWxlLCB0cmFuc2l0aW9uLCB1c2VBbmltYXRpb24gfSBmcm9tICdAYW5ndWxhci9hbmltYXRpb25zJztcclxuXHJcbmV4cG9ydCBjb25zdCBjb2xsYXBzZVkgPSBhbmltYXRpb24oXHJcbiAgW1xyXG4gICAgc3R5bGUoeyBoZWlnaHQ6ICcqJywgb3ZlcmZsb3c6ICdoaWRkZW4nLCAnYm94LXNpemluZyc6ICdib3JkZXItYm94JyB9KSxcclxuICAgIGFuaW1hdGUoJ3t7IHRpbWUgfX0ge3sgZWFzaW5nIH19Jywgc3R5bGUoeyBoZWlnaHQ6ICcwJywgcGFkZGluZzogJzBweCcgfSkpXHJcbiAgXSxcclxuICB7IHBhcmFtczogeyB0aW1lOiAnMzUwbXMnLCBlYXNpbmc6ICdlYXNlJyB9IH1cclxuKTtcclxuXHJcbmV4cG9ydCBjb25zdCBjb2xsYXBzZVggPSBhbmltYXRpb24oXHJcbiAgW1xyXG4gICAgc3R5bGUoeyB3aWR0aDogJyonLCBvdmVyZmxvdzogJ2hpZGRlbicsICdib3gtc2l6aW5nJzogJ2JvcmRlci1ib3gnIH0pLFxyXG4gICAgYW5pbWF0ZSgne3sgdGltZSB9fSB7eyBlYXNpbmcgfX0nLCBzdHlsZSh7IHdpZHRoOiAnMCcsIHBhZGRpbmc6ICcwcHgnIH0pKVxyXG4gIF0sXHJcbiAgeyBwYXJhbXM6IHsgdGltZTogJzM1MG1zJywgZWFzaW5nOiAnZWFzZScgfSB9XHJcbik7XHJcblxyXG5leHBvcnQgY29uc3QgZXhwYW5kWSA9IGFuaW1hdGlvbihcclxuICBbXHJcbiAgICBzdHlsZSh7IGhlaWdodDogJzAnLCBvdmVyZmxvdzogJ2hpZGRlbicsICdib3gtc2l6aW5nJzogJ2JvcmRlci1ib3gnIH0pLFxyXG4gICAgYW5pbWF0ZSgne3sgdGltZSB9fSB7eyBlYXNpbmcgfX0nLCBzdHlsZSh7IGhlaWdodDogJyonLCBwYWRkaW5nOiAnKicgfSkpXHJcbiAgXSxcclxuICB7IHBhcmFtczogeyB0aW1lOiAnMzUwbXMnLCBlYXNpbmc6ICdlYXNlJyB9IH1cclxuKTtcclxuXHJcbmV4cG9ydCBjb25zdCBleHBhbmRYID0gYW5pbWF0aW9uKFxyXG4gIFtcclxuICAgIHN0eWxlKHsgd2lkdGg6ICcwJywgb3ZlcmZsb3c6ICdoaWRkZW4nLCAnYm94LXNpemluZyc6ICdib3JkZXItYm94JyB9KSxcclxuICAgIGFuaW1hdGUoJ3t7IHRpbWUgfX0ge3sgZWFzaW5nIH19Jywgc3R5bGUoeyB3aWR0aDogJyonLCBwYWRkaW5nOiAnKicgfSkpXHJcbiAgXSxcclxuICB7IHBhcmFtczogeyB0aW1lOiAnMzUwbXMnLCBlYXNpbmc6ICdlYXNlJyB9IH1cclxuKTtcclxuXHJcbmV4cG9ydCBjb25zdCBjb2xsYXBzZSA9IHRyaWdnZXIoJ2NvbGxhcHNlJywgW1xyXG4gIHN0YXRlKCdjb2xsYXBzZWQnLCBzdHlsZSh7IGhlaWdodDogJzAnLCBvdmVyZmxvdzogJ2hpZGRlbicgfSkpLFxyXG4gIHN0YXRlKCdleHBhbmRlZCcsIHN0eWxlKHsgaGVpZ2h0OiAnKicsIG92ZXJmbG93OiAnaGlkZGVuJyB9KSksXHJcbiAgdHJhbnNpdGlvbignZXhwYW5kZWQgPT4gY29sbGFwc2VkJywgdXNlQW5pbWF0aW9uKGNvbGxhcHNlWSkpLFxyXG4gIHRyYW5zaXRpb24oJ2NvbGxhcHNlZCA9PiBleHBhbmRlZCcsIHVzZUFuaW1hdGlvbihleHBhbmRZKSlcclxuXSk7XHJcbiJdfQ==

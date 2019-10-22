@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@abp/ng.core'), require('@abp/ng.theme.shared'), require('@angular/core'), require('@ng-bootstrap/ng-bootstrap'), require('@ngxs/store'), require('primeng/table'), require('@angular/forms'), require('rxjs'), require('rxjs/operators'), require('@angular/router')) :
-    typeof define === 'function' && define.amd ? define('@abp/ng.tenant-management', ['exports', '@abp/ng.core', '@abp/ng.theme.shared', '@angular/core', '@ng-bootstrap/ng-bootstrap', '@ngxs/store', 'primeng/table', '@angular/forms', 'rxjs', 'rxjs/operators', '@angular/router'], factory) :
-    (global = global || self, factory((global.abp = global.abp || {}, global.abp.ng = global.abp.ng || {}, global.abp.ng['tenant-management'] = {}), global.ng_core, global.ng_theme_shared, global.ng.core, global.ngBootstrap, global.store, global.table, global.ng.forms, global.rxjs, global.rxjs.operators, global.ng.router));
-}(this, function (exports, ng_core, ng_theme_shared, core, ngBootstrap, store, table, forms, rxjs, operators, router) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@abp/ng.core'), require('@abp/ng.theme.shared'), require('@angular/core'), require('@ng-bootstrap/ng-bootstrap'), require('@ngxs/store'), require('primeng/table'), require('@angular/forms'), require('rxjs'), require('rxjs/operators'), require('@angular/router'), require('@abp/ng.feature-management'), require('@ngx-validate/core')) :
+    typeof define === 'function' && define.amd ? define('@abp/ng.tenant-management', ['exports', '@abp/ng.core', '@abp/ng.theme.shared', '@angular/core', '@ng-bootstrap/ng-bootstrap', '@ngxs/store', 'primeng/table', '@angular/forms', 'rxjs', 'rxjs/operators', '@angular/router', '@abp/ng.feature-management', '@ngx-validate/core'], factory) :
+    (global = global || self, factory((global.abp = global.abp || {}, global.abp.ng = global.abp.ng || {}, global.abp.ng['tenant-management'] = {}), global.ng_core, global.ng_theme_shared, global.ng.core, global.ngBootstrap, global.store, global.table, global.ng.forms, global.rxjs, global.rxjs.operators, global.ng.router, global.ng_featureManagement, global.core$1));
+}(this, function (exports, ng_core, ng_theme_shared, core, ngBootstrap, store, table, forms, rxjs, operators, router, ng_featureManagement, core$1) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -203,7 +203,7 @@
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     var GetTenants = /** @class */ (function () {
         function GetTenants(payload) {
@@ -273,7 +273,7 @@
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     var TenantManagementService = /** @class */ (function () {
         function TenantManagementService(rest) {
@@ -293,7 +293,7 @@
             var request = {
                 method: 'GET',
                 url: '/api/multi-tenancy/tenants',
-                params: params,
+                params: params
             };
             return this.rest.request(request);
         };
@@ -309,7 +309,7 @@
             /** @type {?} */
             var request = {
                 method: 'GET',
-                url: "/api/multi-tenancy/tenants/" + id,
+                url: "/api/multi-tenancy/tenants/" + id
             };
             return this.rest.request(request);
         };
@@ -325,7 +325,7 @@
             /** @type {?} */
             var request = {
                 method: 'DELETE',
-                url: "/api/multi-tenancy/tenants/" + id,
+                url: "/api/multi-tenancy/tenants/" + id
             };
             return this.rest.request(request);
         };
@@ -341,8 +341,8 @@
             /** @type {?} */
             var request = {
                 method: 'POST',
-                url: "/api/multi-tenancy/tenants",
-                body: body,
+                url: '/api/multi-tenancy/tenants',
+                body: body
             };
             return this.rest.request(request);
         };
@@ -362,7 +362,7 @@
             var request = {
                 method: 'PUT',
                 url: url,
-                body: body,
+                body: body
             };
             return this.rest.request(request);
         };
@@ -381,7 +381,7 @@
             var request = {
                 method: 'GET',
                 responseType: "text" /* Text */,
-                url: url,
+                url: url
             };
             return this.rest.request(request);
         };
@@ -400,7 +400,7 @@
             var request = {
                 method: 'PUT',
                 url: url,
-                params: { defaultConnectionString: payload.defaultConnectionString },
+                params: { defaultConnectionString: payload.defaultConnectionString }
             };
             return this.rest.request(request);
         };
@@ -414,17 +414,17 @@
          */
         function (id) {
             /** @type {?} */
-            var url = "/api/multi-tenancy/tenant/" + id + "/default-connection-string";
+            var url = "/api/multi-tenancy/tenants/" + id + "/default-connection-string";
             /** @type {?} */
             var request = {
                 method: 'DELETE',
-                url: url,
+                url: url
             };
             return this.rest.request(request);
         };
         TenantManagementService.decorators = [
             { type: core.Injectable, args: [{
-                        providedIn: 'root',
+                        providedIn: 'root'
                     },] }
         ];
         /** @nocollapse */
@@ -444,7 +444,7 @@
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     var TenantManagementState = /** @class */ (function () {
         function TenantManagementState(tenantManagementService) {
@@ -578,6 +578,9 @@
              */
             function () { return dispatch(new GetTenants()); })));
         };
+        TenantManagementState.ctorParameters = function () { return [
+            { type: TenantManagementService }
+        ]; };
         __decorate([
             store.Action(GetTenants),
             __metadata("design:type", Function),
@@ -639,8 +642,20 @@
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
+    /**
+     * @record
+     */
+    function SelectedModalContent() { }
+    if (false) {
+        /** @type {?} */
+        SelectedModalContent.prototype.type;
+        /** @type {?} */
+        SelectedModalContent.prototype.title;
+        /** @type {?} */
+        SelectedModalContent.prototype.template;
+    }
     var TenantsComponent = /** @class */ (function () {
         function TenantsComponent(confirmationService, tenantService, fb, store) {
             this.confirmationService = confirmationService;
@@ -648,11 +663,12 @@
             this.fb = fb;
             this.store = store;
             this.selectedModalContent = (/** @type {?} */ ({}));
-            this.pageQuery = {
-                sorting: 'name',
-            };
+            this.visibleFeatures = false;
+            this.pageQuery = {};
             this.loading = false;
             this.modalBusy = false;
+            this.sortOrder = '';
+            this.sortKey = '';
         }
         Object.defineProperty(TenantsComponent.prototype, "useSharedDatabase", {
             get: /**
@@ -674,6 +690,15 @@
             enumerable: true,
             configurable: true
         });
+        /**
+         * @return {?}
+         */
+        TenantsComponent.prototype.ngOnInit = /**
+         * @return {?}
+         */
+        function () {
+            this.get();
+        };
         /**
          * @param {?} value
          * @return {?}
@@ -710,7 +735,7 @@
         function () {
             this.defaultConnectionStringForm = this.fb.group({
                 useSharedDatabase: this._useSharedDatabase,
-                defaultConnectionString: this.defaultConnectionString || '',
+                defaultConnectionString: [this.defaultConnectionString || ''],
             });
         };
         /**
@@ -822,27 +847,31 @@
         function () {
             var _this = this;
             this.modalBusy = true;
-            if (this.useSharedDatabase) {
+            if (this.useSharedDatabase || (!this.useSharedDatabase && !this.connectionString)) {
                 this.tenantService
                     .deleteDefaultConnectionString(this.selected.id)
-                    .pipe(operators.take(1))
+                    .pipe(operators.take(1), operators.finalize((/**
+                 * @return {?}
+                 */
+                function () { return (_this.modalBusy = false); })))
                     .subscribe((/**
                  * @return {?}
                  */
                 function () {
-                    _this.modalBusy = false;
                     _this.isModalVisible = false;
                 }));
             }
             else {
                 this.tenantService
                     .updateDefaultConnectionString({ id: this.selected.id, defaultConnectionString: this.connectionString })
-                    .pipe(operators.take(1))
+                    .pipe(operators.take(1), operators.finalize((/**
+                 * @return {?}
+                 */
+                function () { return (_this.modalBusy = false); })))
                     .subscribe((/**
                  * @return {?}
                  */
                 function () {
-                    _this.modalBusy = false;
                     _this.isModalVisible = false;
                 }));
             }
@@ -862,11 +891,14 @@
                 .dispatch(this.selected.id
                 ? new UpdateTenant(__assign({}, this.tenantForm.value, { id: this.selected.id }))
                 : new CreateTenant(this.tenantForm.value))
+                .pipe(operators.finalize((/**
+             * @return {?}
+             */
+            function () { return (_this.modalBusy = false); })))
                 .subscribe((/**
              * @return {?}
              */
             function () {
-                _this.modalBusy = false;
                 _this.isModalVisible = false;
             }));
         };
@@ -893,7 +925,6 @@
             function (status) {
                 if (status === "confirm" /* confirm */) {
                     _this.store.dispatch(new DeleteTenant(id));
-                    _this.modalBusy = false;
                 }
             }));
         };
@@ -930,7 +961,7 @@
         TenantsComponent.decorators = [
             { type: core.Component, args: [{
                         selector: 'abp-tenants',
-                        template: "<div id=\"wrapper\" class=\"card\">\n  <div class=\"card-header\">\n    <div class=\"row\">\n      <div class=\"col col-md-6\">\n        <h5 class=\"card-title\">\n          {{ 'AbpTenantManagement::Tenants' | abpLocalization }}\n        </h5>\n      </div>\n      <div class=\"text-right col col-md-6\">\n        <button\n          [abpPermission]=\"'AbpTenantManagement.Tenants.Create'\"\n          id=\"create-tenants\"\n          class=\"btn btn-primary\"\n          type=\"button\"\n          (click)=\"onAddTenant()\"\n        >\n          <i class=\"fa fa-plus mr-1\"></i>\n          <span>{{ 'AbpTenantManagement::NewTenant' | abpLocalization }}</span>\n        </button>\n      </div>\n    </div>\n  </div>\n  <div class=\"card-body\">\n    <div id=\"data-tables-table-filter\" class=\"data-tables-filter\">\n      <label\n        ><input\n          type=\"search\"\n          class=\"form-control form-control-sm\"\n          [placeholder]=\"'AbpUi::PagerSearch' | abpLocalization\"\n          (input.debounce)=\"onSearch($event.target.value)\"\n      /></label>\n    </div>\n    <p-table\n      [value]=\"data$ | async\"\n      [lazy]=\"true\"\n      [lazyLoadOnInit]=\"false\"\n      [paginator]=\"true\"\n      [rows]=\"10\"\n      [totalRecords]=\"totalCount$ | async\"\n      [loading]=\"loading\"\n      (onLazyLoad)=\"onPageChange($event)\"\n    >\n      <ng-template pTemplate=\"header\">\n        <tr>\n          <th>{{ 'AbpTenantManagement::Actions' | abpLocalization }}</th>\n          <th>{{ 'AbpTenantManagement::TenantName' | abpLocalization }}</th>\n        </tr>\n      </ng-template>\n      <ng-template pTemplate=\"body\" let-data>\n        <tr>\n          <td>\n            <div ngbDropdown class=\"d-inline-block\">\n              <button\n                class=\"btn btn-primary btn-sm dropdown-toggle\"\n                data-toggle=\"dropdown\"\n                aria-haspopup=\"true\"\n                ngbDropdownToggle\n              >\n                <i class=\"fa fa-cog mr-1\"></i>{{ 'AbpTenantManagement::Actions' | abpLocalization }}\n              </button>\n              <div ngbDropdownMenu>\n                <button\n                  [abpPermission]=\"'AbpTenantManagement.Tenants.Update'\"\n                  ngbDropdownItem\n                  (click)=\"onEditTenant(data.id)\"\n                >\n                  {{ 'AbpTenantManagement::Edit' | abpLocalization }}\n                </button>\n                <button\n                  [abpPermission]=\"'AbpTenantManagement.Tenants.ManageConnectionStrings'\"\n                  ngbDropdownItem\n                  (click)=\"onEditConnectionString(data.id)\"\n                >\n                  {{ 'AbpTenantManagement::ConnectionStrings' | abpLocalization }}\n                </button>\n                <button\n                  [abpPermission]=\"'AbpTenantManagement.Tenants.Delete'\"\n                  ngbDropdownItem\n                  (click)=\"delete(data.id, data.name)\"\n                >\n                  {{ 'AbpTenantManagement::Delete' | abpLocalization }}\n                </button>\n              </div>\n            </div>\n          </td>\n          <td>{{ data.name }}</td>\n        </tr>\n      </ng-template>\n    </p-table>\n  </div>\n</div>\n\n<abp-modal [(visible)]=\"isModalVisible\" [busy]=\"modalBusy\">\n  <ng-template #abpHeader>\n    <h3>{{ selectedModalContent.title | abpLocalization }}</h3>\n  </ng-template>\n\n  <ng-template #abpBody>\n    <ng-container *ngTemplateOutlet=\"selectedModalContent?.template\"></ng-container>\n  </ng-template>\n\n  <ng-template #abpFooter>\n    <button #abpClose type=\"button\" class=\"btn btn-secondary\">\n      {{ 'AbpTenantManagement::Cancel' | abpLocalization }}\n    </button>\n    <abp-button iconClass=\"fa fa-check\" (click)=\"save()\">{{ 'AbpIdentity::Save' | abpLocalization }}</abp-button>\n  </ng-template>\n</abp-modal>\n\n<ng-template #tenantModalTemplate>\n  <form [formGroup]=\"tenantForm\" (ngSubmit)=\"save()\">\n    <div class=\"mt-2\">\n      <div class=\"form-group\">\n        <label for=\"name\">{{ 'AbpTenantManagement::TenantName' | abpLocalization }}</label>\n        <input type=\"text\" id=\"name\" class=\"form-control\" formControlName=\"name\" autofocus />\n      </div>\n    </div>\n  </form>\n</ng-template>\n\n<ng-template #connectionStringModalTemplate>\n  <form [formGroup]=\"defaultConnectionStringForm\" (ngSubmit)=\"save()\">\n    <div class=\"mt-2\">\n      <div class=\"form-group\">\n        <div class=\"form-check\">\n          <input\n            id=\"useSharedDatabase\"\n            type=\"checkbox\"\n            class=\"form-check-input\"\n            formControlName=\"useSharedDatabase\"\n            autofocus\n          />\n          <label for=\"useSharedDatabase\" class=\"font-check-label\">{{\n            'AbpTenantManagement::DisplayName:UseSharedDatabase' | abpLocalization\n          }}</label>\n        </div>\n      </div>\n      <div class=\"form-group\" *ngIf=\"!useSharedDatabase\">\n        <label for=\"defaultConnectionString\">{{\n          'AbpTenantManagement::DisplayName:DefaultConnectionString' | abpLocalization\n        }}</label>\n        <input\n          type=\"text\"\n          id=\"defaultConnectionString\"\n          class=\"form-control\"\n          formControlName=\"defaultConnectionString\"\n        />\n      </div>\n    </div>\n  </form>\n</ng-template>\n"
+                        template: "<div class=\"row entry-row\">\r\n  <div class=\"col-auto\">\r\n    <h1 class=\"content-header-title\">{{ 'AbpTenantManagement::Tenants' | abpLocalization }}</h1>\r\n  </div>\r\n  <div class=\"col\">\r\n    <div class=\"text-lg-right pt-2\" id=\"AbpContentToolbar\">\r\n      <button\r\n        [abpPermission]=\"'AbpTenantManagement.Tenants.Create'\"\r\n        id=\"create-tenants\"\r\n        class=\"btn btn-primary\"\r\n        type=\"button\"\r\n        (click)=\"onAddTenant()\"\r\n      >\r\n        <i class=\"fa fa-plus mr-1\"></i>\r\n        <span>{{ 'AbpTenantManagement::NewTenant' | abpLocalization }}</span>\r\n      </button>\r\n    </div>\r\n  </div>\r\n</div>\r\n\r\n<div id=\"wrapper\" class=\"card\">\r\n  <div class=\"card-body\">\r\n    <div id=\"data-tables-table-filter\" class=\"data-tables-filter\">\r\n      <label\r\n        ><input\r\n          type=\"search\"\r\n          class=\"form-control form-control-sm\"\r\n          [placeholder]=\"'AbpUi::PagerSearch' | abpLocalization\"\r\n          (input.debounce)=\"onSearch($event.target.value)\"\r\n      /></label>\r\n    </div>\r\n    <p-table\r\n      *ngIf=\"[150, 0] as columnWidths\"\r\n      [value]=\"data$ | async\"\r\n      [abpTableSort]=\"{ key: sortKey, order: sortOrder }\"\r\n      [lazy]=\"true\"\r\n      [lazyLoadOnInit]=\"false\"\r\n      [paginator]=\"true\"\r\n      [rows]=\"10\"\r\n      [totalRecords]=\"totalCount$ | async\"\r\n      [loading]=\"loading\"\r\n      [resizableColumns]=\"true\"\r\n      [scrollable]=\"true\"\r\n      (onLazyLoad)=\"onPageChange($event)\"\r\n    >\r\n      <ng-template pTemplate=\"colgroup\">\r\n        <colgroup>\r\n          <col *ngFor=\"let width of columnWidths\" [ngStyle]=\"{ 'width.px': width || undefined }\" />\r\n        </colgroup>\r\n      </ng-template>\r\n      <ng-template pTemplate=\"emptymessage\" let-columns>\r\n        <tr\r\n          abp-table-empty-message\r\n          [attr.colspan]=\"columnWidths.length\"\r\n          localizationResource=\"AbpTenantManagement\"\r\n          localizationProp=\"NoDataAvailableInDatatable\"\r\n        ></tr>\r\n      </ng-template>\r\n      <ng-template pTemplate=\"header\" let-columns>\r\n        <tr>\r\n          <th>{{ 'AbpTenantManagement::Actions' | abpLocalization }}</th>\r\n          <th pResizableColumn (click)=\"sortOrderIcon.sort('name')\">\r\n            {{ 'AbpTenantManagement::TenantName' | abpLocalization }}\r\n            <abp-sort-order-icon #sortOrderIcon key=\"name\" [(selectedKey)]=\"sortKey\" [(order)]=\"sortOrder\">\r\n            </abp-sort-order-icon>\r\n          </th>\r\n        </tr>\r\n      </ng-template>\r\n      <ng-template pTemplate=\"body\" let-data>\r\n        <tr>\r\n          <td class=\"text-center\">\r\n            <div ngbDropdown container=\"body\" class=\"d-inline-block\">\r\n              <button\r\n                class=\"btn btn-primary btn-sm dropdown-toggle\"\r\n                data-toggle=\"dropdown\"\r\n                aria-haspopup=\"true\"\r\n                ngbDropdownToggle\r\n              >\r\n                <i class=\"fa fa-cog mr-1\"></i>{{ 'AbpTenantManagement::Actions' | abpLocalization }}\r\n              </button>\r\n              <div ngbDropdownMenu>\r\n                <button\r\n                  [abpPermission]=\"'AbpTenantManagement.Tenants.Update'\"\r\n                  ngbDropdownItem\r\n                  (click)=\"onEditTenant(data.id)\"\r\n                >\r\n                  {{ 'AbpTenantManagement::Edit' | abpLocalization }}\r\n                </button>\r\n                <button\r\n                  [abpPermission]=\"'AbpTenantManagement.Tenants.ManageConnectionStrings'\"\r\n                  ngbDropdownItem\r\n                  (click)=\"onEditConnectionString(data.id)\"\r\n                >\r\n                  {{ 'AbpTenantManagement::Permission:ManageConnectionStrings' | abpLocalization }}\r\n                </button>\r\n                <button\r\n                  [abpPermission]=\"'AbpTenantManagement.Tenants.ManageFeatures'\"\r\n                  ngbDropdownItem\r\n                  (click)=\"providerKey = data.id; visibleFeatures = true\"\r\n                >\r\n                  {{ 'AbpTenantManagement::Permission:ManageFeatures' | abpLocalization }}\r\n                </button>\r\n                <button\r\n                  [abpPermission]=\"'AbpTenantManagement.Tenants.Delete'\"\r\n                  ngbDropdownItem\r\n                  (click)=\"delete(data.id, data.name)\"\r\n                >\r\n                  {{ 'AbpTenantManagement::Delete' | abpLocalization }}\r\n                </button>\r\n              </div>\r\n            </div>\r\n          </td>\r\n          <td>{{ data.name }}</td>\r\n        </tr>\r\n      </ng-template>\r\n    </p-table>\r\n  </div>\r\n</div>\r\n\r\n<abp-modal size=\"md\" [(visible)]=\"isModalVisible\" [busy]=\"modalBusy\">\r\n  <ng-template #abpHeader>\r\n    <h3>{{ selectedModalContent.title | abpLocalization }}</h3>\r\n  </ng-template>\r\n\r\n  <ng-template #abpBody>\r\n    <ng-container *ngTemplateOutlet=\"selectedModalContent?.template\"></ng-container>\r\n  </ng-template>\r\n\r\n  <ng-template #abpFooter>\r\n    <button #abpClose type=\"button\" class=\"btn btn-secondary\">\r\n      {{ 'AbpTenantManagement::Cancel' | abpLocalization }}\r\n    </button>\r\n    <abp-button iconClass=\"fa fa-check\" (click)=\"save()\">{{ 'AbpIdentity::Save' | abpLocalization }}</abp-button>\r\n  </ng-template>\r\n</abp-modal>\r\n\r\n<ng-template #tenantModalTemplate>\r\n  <form [formGroup]=\"tenantForm\" (ngSubmit)=\"save()\">\r\n    <div class=\"mt-2\">\r\n      <div class=\"form-group\">\r\n        <label for=\"name\">{{ 'AbpTenantManagement::TenantName' | abpLocalization }}</label>\r\n        <input type=\"text\" id=\"name\" class=\"form-control\" formControlName=\"name\" autofocus />\r\n      </div>\r\n    </div>\r\n  </form>\r\n</ng-template>\r\n\r\n<ng-template #connectionStringModalTemplate>\r\n  <form [formGroup]=\"defaultConnectionStringForm\" (ngSubmit)=\"save()\">\r\n    <label class=\"mt-2\">\r\n      <div class=\"form-group\">\r\n        <div class=\"custom-checkbox custom-control mb-2\">\r\n          <input\r\n            id=\"useSharedDatabase\"\r\n            type=\"checkbox\"\r\n            class=\"custom-control-input\"\r\n            formControlName=\"useSharedDatabase\"\r\n            autofocus\r\n          />\r\n          <label for=\"useSharedDatabase\" class=\"custom-control-label\">{{\r\n            'AbpTenantManagement::DisplayName:UseSharedDatabase' | abpLocalization\r\n          }}</label>\r\n        </div>\r\n      </div>\r\n      <label class=\"form-group\" *ngIf=\"!useSharedDatabase\">\r\n        <label for=\"defaultConnectionString\">{{\r\n          'AbpTenantManagement::DisplayName:DefaultConnectionString' | abpLocalization\r\n        }}</label>\r\n        <input\r\n          type=\"text\"\r\n          id=\"defaultConnectionString\"\r\n          class=\"form-control\"\r\n          formControlName=\"defaultConnectionString\"\r\n        />\r\n      </label>\r\n    </label>\r\n  </form>\r\n</ng-template>\r\n\r\n<abp-feature-management [(visible)]=\"visibleFeatures\" providerName=\"T\" [providerKey]=\"providerKey\">\r\n</abp-feature-management>\r\n"
                     }] }
         ];
         /** @nocollapse */
@@ -972,6 +1003,10 @@
         /** @type {?} */
         TenantsComponent.prototype.selectedModalContent;
         /** @type {?} */
+        TenantsComponent.prototype.visibleFeatures;
+        /** @type {?} */
+        TenantsComponent.prototype.providerKey;
+        /** @type {?} */
         TenantsComponent.prototype._useSharedDatabase;
         /** @type {?} */
         TenantsComponent.prototype.pageQuery;
@@ -979,6 +1014,10 @@
         TenantsComponent.prototype.loading;
         /** @type {?} */
         TenantsComponent.prototype.modalBusy;
+        /** @type {?} */
+        TenantsComponent.prototype.sortOrder;
+        /** @type {?} */
+        TenantsComponent.prototype.sortKey;
         /** @type {?} */
         TenantsComponent.prototype.tenantModalTemplate;
         /** @type {?} */
@@ -1007,43 +1046,7 @@
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-     */
-    var TenantsResolver = /** @class */ (function () {
-        function TenantsResolver(store) {
-            this.store = store;
-        }
-        /**
-         * @return {?}
-         */
-        TenantsResolver.prototype.resolve = /**
-         * @return {?}
-         */
-        function () {
-            /** @type {?} */
-            var data = this.store.selectSnapshot(TenantManagementState.get);
-            return data && data.length ? null : this.store.dispatch(new GetTenants());
-        };
-        TenantsResolver.decorators = [
-            { type: core.Injectable }
-        ];
-        /** @nocollapse */
-        TenantsResolver.ctorParameters = function () { return [
-            { type: store.Store }
-        ]; };
-        return TenantsResolver;
-    }());
-    if (false) {
-        /**
-         * @type {?}
-         * @private
-         */
-        TenantsResolver.prototype.store;
-    }
-
-    /**
-     * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     var ɵ0 = { requiredPolicy: 'AbpTenantManagement.Tenants' };
     /** @type {?} */
@@ -1054,7 +1057,7 @@
             component: ng_core.DynamicLayoutComponent,
             canActivate: [ng_core.AuthGuard, ng_core.PermissionGuard],
             data: ɵ0,
-            children: [{ path: '', component: TenantsComponent, resolve: [TenantsResolver] }],
+            children: [{ path: '', component: TenantsComponent }],
         },
     ];
     var TenantManagementRoutingModule = /** @class */ (function () {
@@ -1064,7 +1067,6 @@
             { type: core.NgModule, args: [{
                         imports: [router.RouterModule.forChild(routes)],
                         exports: [router.RouterModule],
-                        providers: [TenantsResolver],
                     },] }
         ];
         return TenantManagementRoutingModule;
@@ -1072,7 +1074,7 @@
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     var TenantManagementModule = /** @class */ (function () {
         function TenantManagementModule() {
@@ -1083,57 +1085,73 @@
                         imports: [
                             TenantManagementRoutingModule,
                             store.NgxsModule.forFeature([TenantManagementState]),
+                            core$1.NgxValidateCoreModule,
                             ng_core.CoreModule,
                             table.TableModule,
                             ng_theme_shared.ThemeSharedModule,
                             ngBootstrap.NgbDropdownModule,
+                            ng_featureManagement.FeatureManagementModule,
                         ],
                     },] }
         ];
         return TenantManagementModule;
     }());
+    /**
+     *
+     * @deprecated since version 0.9.0
+     * @return {?}
+     */
+    function TenantManagementProviders() {
+        return [];
+    }
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
-    /** @type {?} */
-    var TENANT_MANAGEMENT_ROUTES = (/** @type {?} */ ([
-        {
-            name: 'AbpTenantManagement::Menu:TenantManagement',
-            path: 'tenant-management',
-            parentName: 'AbpUiNavigation::Menu:Administration',
-            layout: "application" /* application */,
-            iconClass: 'fa fa-users',
-            children: [
-                {
-                    path: 'tenants',
-                    name: 'AbpTenantManagement::Tenants',
-                    order: 1,
-                    requiredPolicy: 'AbpTenantManagement.Tenants',
-                },
-            ],
-        },
-    ]));
+    /**
+     *
+     * @deprecated since version 0.9.0
+     * @type {?}
+     */
+    var TENANT_MANAGEMENT_ROUTES = {
+        routes: (/** @type {?} */ ([
+            {
+                name: 'AbpTenantManagement::Menu:TenantManagement',
+                path: 'tenant-management',
+                parentName: 'AbpUiNavigation::Menu:Administration',
+                layout: "application" /* application */,
+                iconClass: 'fa fa-users',
+                children: [
+                    {
+                        path: 'tenants',
+                        name: 'AbpTenantManagement::Tenants',
+                        order: 1,
+                        requiredPolicy: 'AbpTenantManagement.Tenants',
+                    },
+                ],
+            },
+        ])),
+    };
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
 
     /**
      * @fileoverview added by tsickle
-     * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
      */
     var TenantManagement;
     (function (TenantManagement) {
@@ -1190,16 +1208,68 @@
         }
     })(TenantManagement || (TenantManagement = {}));
 
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     */
+
+    /**
+     * @fileoverview added by tsickle
+     * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+     */
+    var TenantManagementStateService = /** @class */ (function () {
+        function TenantManagementStateService(store) {
+            this.store = store;
+        }
+        /**
+         * @return {?}
+         */
+        TenantManagementStateService.prototype.getTenants = /**
+         * @return {?}
+         */
+        function () {
+            return this.store.selectSnapshot(TenantManagementState.get);
+        };
+        /**
+         * @return {?}
+         */
+        TenantManagementStateService.prototype.getTenantsTotalCount = /**
+         * @return {?}
+         */
+        function () {
+            return this.store.selectSnapshot(TenantManagementState.getTenantsTotalCount);
+        };
+        TenantManagementStateService.decorators = [
+            { type: core.Injectable, args: [{
+                        providedIn: 'root',
+                    },] }
+        ];
+        /** @nocollapse */
+        TenantManagementStateService.ctorParameters = function () { return [
+            { type: store.Store }
+        ]; };
+        /** @nocollapse */ TenantManagementStateService.ngInjectableDef = core.ɵɵdefineInjectable({ factory: function TenantManagementStateService_Factory() { return new TenantManagementStateService(core.ɵɵinject(store.Store)); }, token: TenantManagementStateService, providedIn: "root" });
+        return TenantManagementStateService;
+    }());
+    if (false) {
+        /**
+         * @type {?}
+         * @private
+         */
+        TenantManagementStateService.prototype.store;
+    }
+
     exports.CreateTenant = CreateTenant;
     exports.DeleteTenant = DeleteTenant;
     exports.GetTenantById = GetTenantById;
     exports.GetTenants = GetTenants;
     exports.TENANT_MANAGEMENT_ROUTES = TENANT_MANAGEMENT_ROUTES;
     exports.TenantManagementModule = TenantManagementModule;
+    exports.TenantManagementProviders = TenantManagementProviders;
     exports.TenantManagementService = TenantManagementService;
     exports.TenantManagementState = TenantManagementState;
+    exports.TenantManagementStateService = TenantManagementStateService;
     exports.TenantsComponent = TenantsComponent;
-    exports.TenantsResolver = TenantsResolver;
     exports.UpdateTenant = UpdateTenant;
     exports.ɵa = TenantsComponent;
     exports.ɵb = TenantManagementState;
@@ -1210,7 +1280,6 @@
     exports.ɵg = UpdateTenant;
     exports.ɵh = DeleteTenant;
     exports.ɵj = TenantManagementRoutingModule;
-    exports.ɵk = TenantsResolver;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
