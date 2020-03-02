@@ -1,6 +1,6 @@
 import { ABP } from '@abp/ng.core';
 import { ConfirmationService, Toaster } from '@abp/ng.theme.shared';
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Select, Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
@@ -16,7 +16,7 @@ import { TenantManagementService } from '../../services/tenant-management.servic
 import { TenantManagementState } from '../../states/tenant-management.state';
 
 interface SelectedModalContent {
-  type: string;
+  type: 'saveConnStr' | 'saveTenant';
   title: string;
   template: TemplateRef<any>;
 }
@@ -50,7 +50,7 @@ export class TenantsComponent implements OnInit {
 
   _useSharedDatabase: boolean;
 
-  pageQuery: ABP.PageQueryParams = {};
+  pageQuery: ABP.PageQueryParams = { maxResultCount: 10 };
 
   loading = false;
 
@@ -74,6 +74,30 @@ export class TenantsComponent implements OnInit {
   @ViewChild('connectionStringModalTemplate', { static: false })
   connectionStringModalTemplate: TemplateRef<any>;
 
+  get isDisabledSaveButton(): boolean {
+    if (!this.selectedModalContent) return false;
+
+    if (
+      this.selectedModalContent.type === 'saveConnStr' &&
+      this.defaultConnectionStringForm &&
+      this.defaultConnectionStringForm.invalid
+    ) {
+      return true;
+    } else if (
+      this.selectedModalContent.type === 'saveTenant' &&
+      this.tenantForm &&
+      this.tenantForm.invalid
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  onVisibleFeaturesChange = (value: boolean) => {
+    this.visibleFeatures = value;
+  };
+
   constructor(
     private confirmationService: ConfirmationService,
     private tenantService: TenantManagementService,
@@ -85,7 +109,7 @@ export class TenantsComponent implements OnInit {
     this.get();
   }
 
-  onSearch(value) {
+  onSearch(value: string) {
     this.pageQuery.filter = value;
     this.get();
   }
@@ -103,7 +127,7 @@ export class TenantsComponent implements OnInit {
     });
   }
 
-  openModal(title: string, template: TemplateRef<any>, type: string) {
+  openModal(title: string, template: TemplateRef<any>, type: 'saveConnStr' | 'saveTenant') {
     this.selectedModalContent = {
       title,
       template,
@@ -127,17 +151,21 @@ export class TenantsComponent implements OnInit {
         this._useSharedDatabase = fetchedConnectionString ? false : true;
         this.defaultConnectionString = fetchedConnectionString ? fetchedConnectionString : '';
         this.createDefaultConnectionStringForm();
-        this.openModal('AbpTenantManagement::ConnectionStrings', this.connectionStringModalTemplate, 'saveConnStr');
+        this.openModal(
+          'AbpTenantManagement::ConnectionStrings',
+          this.connectionStringModalTemplate,
+          'saveConnStr',
+        );
       });
   }
 
-  onAddTenant() {
+  addTenant() {
     this.selected = {} as ABP.BasicItem;
     this.createTenantForm();
     this.openModal('AbpTenantManagement::NewTenant', this.tenantModalTemplate, 'saveTenant');
   }
 
-  onEditTenant(id: string) {
+  editTenant(id: string) {
     this.store
       .dispatch(new GetTenantById(id))
       .pipe(pluck('TenantManagementState', 'selectedItem'))
@@ -156,6 +184,8 @@ export class TenantsComponent implements OnInit {
   }
 
   saveConnectionString() {
+    if (this.modalBusy) return;
+
     this.modalBusy = true;
     if (this.useSharedDatabase || (!this.useSharedDatabase && !this.connectionString)) {
       this.tenantService
@@ -169,7 +199,10 @@ export class TenantsComponent implements OnInit {
         });
     } else {
       this.tenantService
-        .updateDefaultConnectionString({ id: this.selected.id, defaultConnectionString: this.connectionString })
+        .updateDefaultConnectionString({
+          id: this.selected.id,
+          defaultConnectionString: this.connectionString,
+        })
         .pipe(
           take(1),
           finalize(() => (this.modalBusy = false)),
@@ -181,36 +214,40 @@ export class TenantsComponent implements OnInit {
   }
 
   saveTenant() {
-    if (!this.tenantForm.valid) return;
+    if (!this.tenantForm.valid || this.modalBusy) return;
     this.modalBusy = true;
 
     this.store
       .dispatch(
         this.selected.id
-          ? new UpdateTenant({ ...this.tenantForm.value, id: this.selected.id })
+          ? new UpdateTenant({ ...this.selected, ...this.tenantForm.value, id: this.selected.id })
           : new CreateTenant(this.tenantForm.value),
       )
       .pipe(finalize(() => (this.modalBusy = false)))
       .subscribe(() => {
         this.isModalVisible = false;
+        this.get();
       });
   }
 
   delete(id: string, name: string) {
     this.confirmationService
-      .warn('AbpTenantManagement::TenantDeletionConfirmationMessage', 'AbpTenantManagement::AreYouSure', {
-        messageLocalizationParams: [name],
-      })
+      .warn(
+        'AbpTenantManagement::TenantDeletionConfirmationMessage',
+        'AbpTenantManagement::AreYouSure',
+        {
+          messageLocalizationParams: [name],
+        },
+      )
       .subscribe((status: Toaster.Status) => {
         if (status === Toaster.Status.confirm) {
-          this.store.dispatch(new DeleteTenant(id));
+          this.store.dispatch(new DeleteTenant(id)).subscribe(() => this.get());
         }
       });
   }
 
-  onPageChange(data) {
-    this.pageQuery.skipCount = data.first;
-    this.pageQuery.maxResultCount = data.rows;
+  onPageChange(page: number) {
+    this.pageQuery.skipCount = (page - 1) * this.pageQuery.maxResultCount;
 
     this.get();
   }
@@ -221,5 +258,18 @@ export class TenantsComponent implements OnInit {
       .dispatch(new GetTenants(this.pageQuery))
       .pipe(finalize(() => (this.loading = false)))
       .subscribe();
+  }
+
+  onSharedDatabaseChange(value: boolean) {
+    if (!value) {
+      setTimeout(() => {
+        const defaultConnectionString = document.getElementById(
+          'defaultConnectionString',
+        ) as HTMLInputElement;
+        if (defaultConnectionString) {
+          defaultConnectionString.focus();
+        }
+      }, 0);
+    }
   }
 }

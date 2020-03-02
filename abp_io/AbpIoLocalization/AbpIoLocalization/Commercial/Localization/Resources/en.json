@@ -6,6 +6,7 @@
     "Volo.AbpIo.Commercial:010003": "You are not owner of this organization!",
     "OrganizationNotFoundMessage": "No organization found!",
     "DeveloperCount": "Developer count",
+    "QuestionCount": "Question count",
     "Owners": "Owners",
     "AddMember": "Add member",
     "AddOwner": "Add owner",
@@ -21,10 +22,13 @@
     "Modules": "Modules",
     "LicenseExtendMessage": "Your license end date is extended to {0}",
     "LicenseUpgradeMessage": "Your license is upgraded to {0}",
-    "LicenseAddDeveloperMessage": "{0} developers added to your license" ,
+    "LicenseAddDeveloperMessage": "{0} developers added to your license",
     "Volo.AbpIo.Commercial:010004": "Can not find the specified user! The user must have already registered.",
-    "MyOrganizations":  "My organizations",
-	"ApiKey": "API key",
-	"UserNameNotFound": "There is no user with username {0}"
+    "MyOrganizations": "My organizations",
+    "ApiKey": "API key",
+    "UserNameNotFound": "There is no user with username {0}",
+    "SuccessfullyAddedToNewsletter": "Thanks you for subscribing to our newsletter!",
+    "ManageProfile": "Manage your profile",
+    "EmailNotValid": "Please enter a valid email address."
   }
 }

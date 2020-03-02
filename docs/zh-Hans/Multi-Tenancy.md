@@ -99,7 +99,7 @@ Volo.Abp.MultiTenancy只提供了用于确定当前租户的抽象(称为租户�
 
 ##### 自定义租户解析器
 
-你可以像下面这样,在你模块的ConfigureServices方法中将自定义解析器并添加到 **TenantResolveOptions**中:
+你可以像下面这样,在你模块的ConfigureServices方法中将自定义解析器并添加到 **AbpTenantResolveOptions**中:
 
 ````C#
 using Microsoft.Extensions.DependencyInjection;
@@ -113,7 +113,7 @@ namespace MyCompany.MyProject
     {
         public override void ConfigureServices(ServiceConfigurationContext context)
         {
-            Configure<TenantResolveOptions>(options =>
+            Configure<AbpTenantResolveOptions>(options =>
             {
                 options.TenantResolvers.Add(new MyCustomTenantResolveContributor());
             });
@@ -312,10 +312,10 @@ Volo.Abp.AspNetCore.MultiTenancy 添加了下面这些租户解析器,从当前W
 http://nginx.org/en/docs/http/ngx_http_core_module.html#ignore_invalid_headers
 http://nginx.org/en/docs/http/ngx_http_core_module.html#underscores_in_headers
 
-可以使用AspNetCoreMultiTenancyOptions修改默认的参数名"__tenant".例如:
+可以使用AbpAspNetCoreMultiTenancyOptions修改默认的参数名"__tenant".例如:
 
 ````C#
-services.Configure<AspNetCoreMultiTenancyOptions>(options =>
+services.Configure<AbpAspNetCoreMultiTenancyOptions>(options =>
 {
     options.TenantKey = "MyTenantKey";
 });
@@ -323,7 +323,7 @@ services.Configure<AspNetCoreMultiTenancyOptions>(options =>
 
 ##### 域名租户解析器
 
-实际项目中,大多数情况下你想通过子域名(如mytenant1.mydomain.com)或全域名(如mytenant.com)中确定当前租户.如果是这样,你可以配置TenantResolveOptions添加一个域名租户解析器.
+实际项目中,大多数情况下你想通过子域名(如mytenant1.mydomain.com)或全域名(如mytenant.com)中确定当前租户.如果是这样,你可以配置AbpTenantResolveOptions添加一个域名租户解析器.
 
 ###### 例子:添加子域名解析器
 
@@ -340,7 +340,7 @@ namespace MyCompany.MyProject
     {
         public override void ConfigureServices(ServiceConfigurationContext context)
         {
-            Configure<TenantResolveOptions>(options =>
+            Configure<AbpTenantResolveOptions>(options =>
             {
                 //子域名格式: {0}.mydomain.com (作为最高优先级解析器添加)
                 options.TenantResolvers.Insert(0, new DomainTenantResolver("{0}.mydomain.com"));

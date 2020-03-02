@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using Octokit;
 using Octokit.Internal;
@@ -64,6 +63,17 @@ namespace Volo.Docs.GitHub.Documents
                 .Repository
                 .Release
                 .GetAll(name, repositoryName)).ToList();
+        }
+
+        public async Task<IReadOnlyList<GitHubCommit>> GetFileCommitsAsync(string name, string repositoryName, string version, string filename, string token)
+        {
+            var client = token.IsNullOrWhiteSpace()
+                ? new GitHubClient(new ProductHeaderValue(name))
+                : new GitHubClient(new ProductHeaderValue(name), new InMemoryCredentialStore(new Credentials(token)));
+
+            var repo = await client.Repository.Get(name, repositoryName);
+            var request = new CommitRequest { Path = filename, Sha = version };
+            return await client.Repository.Commit.GetAll(repo.Id, request);
         }
     }
 }

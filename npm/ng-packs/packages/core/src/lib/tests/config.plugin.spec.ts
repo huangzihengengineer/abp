@@ -2,7 +2,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { createServiceFactory, SpectatorService } from '@ngneat/spectator/jest';
 import { NgxsModule, NGXS_PLUGINS, Store } from '@ngxs/store';
 import { environment } from '../../../../../apps/dev-app/src/environments/environment';
-import { LAYOUTS } from '../../../../theme-basic/src/public-api';
+import { LAYOUTS } from '@abp/ng.theme.basic';
 import { RouterOutletComponent } from '../components';
 import { CoreModule } from '../core.module';
 import { eLayoutType } from '../enums/common';
@@ -10,6 +10,7 @@ import { ABP } from '../models';
 import { ConfigPlugin, NGXS_CONFIG_PLUGIN_OPTIONS } from '../plugins';
 import { ConfigState } from '../states';
 import { addAbpRoutes } from '../utils';
+import { OAuthModule } from 'angular-oauth2-oidc';
 
 addAbpRoutes([
   {
@@ -68,27 +69,7 @@ const expectedState = {
       path: '',
       children: [],
       url: '/',
-    },
-    {
-      name: 'AbpAccount::Menu:Account',
-      path: 'account',
-      invisible: true,
-      layout: 'application',
-      children: [
-        {
-          path: 'login',
-          name: 'AbpAccount::Login',
-          order: 1,
-          url: '/account/login',
-        },
-        {
-          path: 'register',
-          name: 'AbpAccount::Register',
-          order: 2,
-          url: '/account/register',
-        },
-      ],
-      url: '/account',
+      order: 1,
     },
     {
       name: 'AbpUiNavigation::Menu:Administration',
@@ -137,8 +118,31 @@ const expectedState = {
             },
           ],
           url: '/tenant-management',
+          order: 2,
         },
       ],
+    },
+    {
+      name: 'AbpAccount::Menu:Account',
+      path: 'account',
+      invisible: true,
+      layout: 'application',
+      children: [
+        {
+          path: 'login',
+          name: 'AbpAccount::Login',
+          order: 1,
+          url: '/account/login',
+        },
+        {
+          path: 'register',
+          name: 'AbpAccount::Register',
+          order: 2,
+          url: '/account/register',
+        },
+      ],
+      url: '/account',
+      order: 2,
     },
   ],
   flattedRoutes: [
@@ -147,39 +151,7 @@ const expectedState = {
       path: '',
       children: [],
       url: '/',
-    },
-    {
-      name: 'AbpAccount::Menu:Account',
-      path: 'account',
-      invisible: true,
-      layout: 'application',
-      children: [
-        {
-          path: 'login',
-          name: 'AbpAccount::Login',
-          order: 1,
-          url: '/account/login',
-        },
-        {
-          path: 'register',
-          name: 'AbpAccount::Register',
-          order: 2,
-          url: '/account/register',
-        },
-      ],
-      url: '/account',
-    },
-    {
-      path: 'login',
-      name: 'AbpAccount::Login',
       order: 1,
-      url: '/account/login',
-    },
-    {
-      path: 'register',
-      name: 'AbpAccount::Register',
-      order: 2,
-      url: '/account/register',
     },
     {
       name: 'AbpUiNavigation::Menu:Administration',
@@ -199,6 +171,7 @@ const expectedState = {
               path: 'users',
               name: 'AbpIdentity::Users',
               order: 1,
+              parentName: 'AbpIdentity::Menu:IdentityManagement',
               requiredPolicy: 'AbpIdentity.Users',
               url: '/identity/users',
             },
@@ -206,6 +179,7 @@ const expectedState = {
               path: 'roles',
               name: 'AbpIdentity::Roles',
               order: 2,
+              parentName: 'AbpIdentity::Menu:IdentityManagement',
               requiredPolicy: 'AbpIdentity.Roles',
               url: '/identity/roles',
             },
@@ -223,11 +197,13 @@ const expectedState = {
               path: 'tenants',
               name: 'AbpTenantManagement::Tenants',
               order: 1,
+              parentName: 'AbpTenantManagement::Menu:TenantManagement',
               requiredPolicy: 'AbpTenantManagement.Tenants',
               url: '/tenant-management/tenants',
             },
           ],
           url: '/tenant-management',
+          order: 2,
         },
       ],
     },
@@ -243,6 +219,7 @@ const expectedState = {
           path: 'users',
           name: 'AbpIdentity::Users',
           order: 1,
+          parentName: 'AbpIdentity::Menu:IdentityManagement',
           requiredPolicy: 'AbpIdentity.Users',
           url: '/identity/users',
         },
@@ -250,6 +227,7 @@ const expectedState = {
           path: 'roles',
           name: 'AbpIdentity::Roles',
           order: 2,
+          parentName: 'AbpIdentity::Menu:IdentityManagement',
           requiredPolicy: 'AbpIdentity.Roles',
           url: '/identity/roles',
         },
@@ -260,6 +238,7 @@ const expectedState = {
       path: 'users',
       name: 'AbpIdentity::Users',
       order: 1,
+      parentName: 'AbpIdentity::Menu:IdentityManagement',
       requiredPolicy: 'AbpIdentity.Users',
       url: '/identity/users',
     },
@@ -267,6 +246,7 @@ const expectedState = {
       path: 'roles',
       name: 'AbpIdentity::Roles',
       order: 2,
+      parentName: 'AbpIdentity::Menu:IdentityManagement',
       requiredPolicy: 'AbpIdentity.Roles',
       url: '/identity/roles',
     },
@@ -281,18 +261,59 @@ const expectedState = {
           path: 'tenants',
           name: 'AbpTenantManagement::Tenants',
           order: 1,
+          parentName: 'AbpTenantManagement::Menu:TenantManagement',
           requiredPolicy: 'AbpTenantManagement.Tenants',
           url: '/tenant-management/tenants',
         },
       ],
       url: '/tenant-management',
+      order: 2,
     },
     {
       path: 'tenants',
       name: 'AbpTenantManagement::Tenants',
       order: 1,
+      parentName: 'AbpTenantManagement::Menu:TenantManagement',
       requiredPolicy: 'AbpTenantManagement.Tenants',
       url: '/tenant-management/tenants',
+    },
+    {
+      name: 'AbpAccount::Menu:Account',
+      path: 'account',
+      invisible: true,
+      layout: 'application',
+      children: [
+        {
+          path: 'login',
+          name: 'AbpAccount::Login',
+          order: 1,
+          parentName: 'AbpAccount::Menu:Account',
+          url: '/account/login',
+        },
+        {
+          path: 'register',
+          name: 'AbpAccount::Register',
+          order: 2,
+          parentName: 'AbpAccount::Menu:Account',
+          url: '/account/register',
+        },
+      ],
+      url: '/account',
+      order: 2,
+    },
+    {
+      path: 'login',
+      name: 'AbpAccount::Login',
+      order: 1,
+      parentName: 'AbpAccount::Menu:Account',
+      url: '/account/login',
+    },
+    {
+      path: 'register',
+      name: 'AbpAccount::Register',
+      order: 2,
+      parentName: 'AbpAccount::Menu:Account',
+      url: '/account/register',
     },
   ],
 };
@@ -303,6 +324,7 @@ describe('ConfigPlugin', () => {
     service: ConfigPlugin,
     imports: [
       CoreModule,
+      OAuthModule.forRoot(),
       NgxsModule.forRoot([]),
       RouterTestingModule.withRoutes([
         {
