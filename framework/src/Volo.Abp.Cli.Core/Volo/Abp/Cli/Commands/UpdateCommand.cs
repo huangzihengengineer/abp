@@ -42,21 +42,22 @@ namespace Volo.Abp.Cli.Commands
 
             if (updateNpm || !updateNuget)
             {
-                UpdateNpmPackages(directory);
+                await UpdateNpmPackages(directory);
             }
         }
 
-        private void UpdateNpmPackages(string directory)
+        private async Task UpdateNpmPackages(string directory)
         {
-            _npmPackagesUpdater.Update(directory);
+            await _npmPackagesUpdater.Update(directory);
         }
 
         private async Task UpdateNugetPackages(CommandLineArgs commandLineArgs, string directory)
         {
-            var includePreviews =
-                commandLineArgs.Options.GetOrNull(Options.IncludePreviews.Short, Options.IncludePreviews.Long) != null;
+            var includePreviews = commandLineArgs
+                                      .Options
+                                      .GetOrNull(Options.IncludePreviews.Short, Options.IncludePreviews.Long) != null;
 
-            var solution = Directory.GetFiles(directory, "*.sln").FirstOrDefault();
+            var solution = Directory.GetFiles(directory, "*.sln", SearchOption.AllDirectories).FirstOrDefault();
 
             if (solution != null)
             {
@@ -94,7 +95,7 @@ namespace Volo.Abp.Cli.Commands
             sb.AppendLine("");
             sb.AppendLine("Usage:");
             sb.AppendLine("");
-            sb.AppendLine("  abp update  [options]");
+            sb.AppendLine("  abp update [options]");
             sb.AppendLine("");
             sb.AppendLine("Options:");
             sb.AppendLine("-p|--include-previews                       (if supported by the template)");
@@ -123,7 +124,7 @@ namespace Volo.Abp.Cli.Commands
                 public const string Short = "sp";
                 public const string Long = "solution-path";
             }
-            
+
             public static class IncludePreviews
             {
                 public const string Short = "p";

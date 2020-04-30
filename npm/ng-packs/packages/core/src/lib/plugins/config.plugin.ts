@@ -8,10 +8,10 @@ import {
   setValue,
   UpdateState,
 } from '@ngxs/store';
+import clone from 'just-clone';
 import snq from 'snq';
 import { ABP } from '../models';
-import { organizeRoutes, getAbpRoutes } from '../utils/route-utils';
-import clone from 'just-clone';
+import { getAbpRoutes, organizeRoutes } from '../utils/route-utils';
 
 export const NGXS_CONFIG_PLUGIN_OPTIONS = new InjectionToken('NGXS_CONFIG_PLUGIN_OPTIONS');
 
