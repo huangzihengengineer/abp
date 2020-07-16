@@ -129,6 +129,7 @@ namespace Volo.Abp.Cli.ProjectModification
                 targetModuleFolder,
                 version,
                 null,
+                null,
                 null
             );
 
@@ -157,6 +158,12 @@ namespace Volo.Abp.Cli.ProjectModification
             if (Directory.Exists(demoFolder))
             {
                 Directory.Delete(demoFolder, true);
+            }
+            
+            var hostFolder = Path.Combine(targetModuleFolder, "host");
+            if (Directory.Exists(hostFolder))
+            {
+                Directory.Delete(hostFolder, true);
             }
         }
 

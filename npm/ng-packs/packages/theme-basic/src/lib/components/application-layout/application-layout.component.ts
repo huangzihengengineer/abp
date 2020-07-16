@@ -1,7 +1,6 @@
 import { eLayoutType, takeUntilDestroy } from '@abp/ng.core';
 import { collapseWithMargin, slideFromBottom } from '@abp/ng.theme.shared';
 import { AfterViewInit, Component, OnDestroy } from '@angular/core';
-import { Store } from '@ngxs/store';
 import { fromEvent } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { eThemeBasicComponents } from '../../enums/components';
@@ -15,8 +14,6 @@ export class ApplicationLayoutComponent implements AfterViewInit, OnDestroy {
   // required for dynamic component
   static type = eLayoutType.application;
 
-  isDropdownChildDynamic: boolean;
-
   isCollapsed = true;
 
   smallScreen: boolean; // do not set true or false
@@ -27,12 +24,9 @@ export class ApplicationLayoutComponent implements AfterViewInit, OnDestroy {
 
   navItemsComponentKey = eThemeBasicComponents.NavItems;
 
-  constructor(private store: Store) {}
-
   private checkWindowWidth() {
     setTimeout(() => {
-      if (window.innerWidth < 768) {
-        this.isDropdownChildDynamic = false;
+      if (window.innerWidth < 992) {
         if (this.smallScreen === false) {
           this.isCollapsed = false;
           setTimeout(() => {
@@ -41,7 +35,6 @@ export class ApplicationLayoutComponent implements AfterViewInit, OnDestroy {
         }
         this.smallScreen = true;
       } else {
-        this.isDropdownChildDynamic = true;
         this.smallScreen = false;
       }
     }, 0);

@@ -19,26 +19,38 @@ const publish = async () => {
     process.exit(1);
   }
 
-  const registry = program.preview ? 'http://localhost:4873' : 'https://registry.npmjs.org';
+  const registry = program.preview
+    ? 'https://www.myget.org/F/abp-nightly/npm'
+    : 'https://registry.npmjs.org';
 
   try {
-    await execa('yarn', ['install-new-dependencies'], { stdout: 'inherit' });
+    await fse.remove('../dist');
+
+    await execa('yarn', ['install'], { stdout: 'inherit', cwd: '../' });
 
     await fse.rename('../lerna.version.json', '../lerna.json');
 
     await execa(
       'yarn',
-      ['lerna', 'version', program.nextVersion, '--yes', '--no-commit-hooks', '--skip-git'],
+      [
+        'lerna',
+        'version',
+        program.nextVersion,
+        '--yes',
+        '--no-commit-hooks',
+        '--skip-git',
+        '--force-publish',
+      ],
       { stdout: 'inherit', cwd: '../' },
     );
 
     await fse.rename('../lerna.json', '../lerna.version.json');
 
+    await execa('yarn', ['replace-with-tilde']);
+
     await execa('yarn', ['build', '--noInstall'], { stdout: 'inherit' });
 
     await fse.rename('../lerna.publish.json', '../lerna.json');
-
-    await fse.remove('../dist/dev-app');
 
     await execa(
       'yarn',

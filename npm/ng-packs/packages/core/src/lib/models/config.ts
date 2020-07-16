@@ -4,11 +4,7 @@ import { ApplicationConfiguration } from './application-configuration';
 import { ABP } from './common';
 
 export namespace Config {
-  export type State = ApplicationConfiguration.Response &
-    ABP.Root & { environment: Environment } & {
-      routes: ABP.FullRoute[];
-      flattedRoutes: ABP.FullRoute[];
-    };
+  export type State = ApplicationConfiguration.Response & ABP.Root & { environment: Environment };
 
   export interface Environment {
     application: Application;
@@ -16,7 +12,7 @@ export namespace Config {
     hmr?: boolean;
     oAuthConfig: AuthConfig;
     apis: Apis;
-    localization: { defaultResourceName: string };
+    localization?: { defaultResourceName?: string };
   }
 
   export interface Application {

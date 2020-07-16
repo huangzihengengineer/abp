@@ -8,8 +8,8 @@
     };
 
     /************************************************************************
-    * RECORD-ACTIONS extension for datatables                                         *
-    *************************************************************************/
+     * RECORD-ACTIONS extension for datatables                               *
+     *************************************************************************/
     (function () {
         if (!$.fn.dataTableExt) {
             return;
@@ -226,8 +226,8 @@
     })();
 
     /************************************************************************
-    * AJAX extension for datatables                                         *
-    *************************************************************************/
+     * AJAX extension for datatables                                         *
+     *************************************************************************/
     (function () {
         datatables.createAjax = function (serverMethod, inputAction) {
             return function (requestData, callback, settings) {
@@ -275,8 +275,8 @@
     })();
 
     /************************************************************************
-    * Configuration/Options normalizer for datatables                       *
-    *************************************************************************/
+     * Configuration/Options normalizer for datatables                       *
+     *************************************************************************/
     (function () {
 
         var customizeRowActionColumn = function (column) {
@@ -291,7 +291,7 @@
 
         datatables.normalizeConfiguration = function (configuration) {
 
-            configuration.scrollX = true;
+            configuration.scrollX = datatables.defaultConfigurations.scrollX;
 
             for (var i = 0; i < configuration.columnDefs.length; i++) {
                 var column = configuration.columnDefs[i];
@@ -304,28 +304,73 @@
                 }
             }
 
-            configuration.language = {
-                info: localize("PagerInfo"),
-                infoFiltered: localize("PagerInfoFiltered"),
-                infoEmpty: localize("PagerInfoEmpty"),
-                search: localize("PagerSearch"),
-                processing: localize("ProcessingWithThreeDot"),
-                loadingRecords: localize("LoadingWithThreeDot"),
-                lengthMenu: localize("PagerShowMenuEntries"),
-                emptyTable: localize("NoDataAvailableInDatatable"),
-                paginate: {
-                    first: localize("PagerFirst"),
-                    last: localize("PagerLast"),
-                    previous: localize("PagerPrevious"),
-                    next: localize("PagerNext")
-                }
-            };
+            configuration.language = datatables.defaultConfigurations.language();
 
-            configuration.dom = '<"dataTable_filters"f>rt<"row dataTable_footer"<"col-auto"l><"col-auto"i><"col"p>>';
+            if(configuration.dom){
+                configuration.dom += datatables.defaultConfigurations.dom;
+            }else{
+                configuration.dom = datatables.defaultConfigurations.dom;
+            }
 
             return configuration;
         };
-
     })();
+
+    /************************************************************************
+     * Default Renderers                                                     *
+     *************************************************************************/
+
+    datatables.defaultRenderers = datatables.defaultRenderers || {};
+
+    datatables.defaultRenderers['boolean'] = function(value) {
+        if (value) {
+            return '<i class="fa fa-check"></i>';
+        } else {
+            return '<i class="fa fa-times"></i>';
+        }
+    };
+
+    datatables.defaultRenderers['date'] = function (value) {
+        return luxon
+            .DateTime
+            .fromISO(value, { locale: abp.localization.currentCulture.name })
+            .toLocaleString();
+    };
+
+    datatables.defaultRenderers['datetime'] = function (value) {
+        return luxon
+            .DateTime
+            .fromISO(value, { locale: abp.localization.currentCulture.name })
+            .toLocaleString(luxon.DateTime.DATETIME_SHORT);
+    };
+
+    /************************************************************************
+     * Default Configurations                                                *
+     *************************************************************************/
+
+    datatables.defaultConfigurations = datatables.defaultConfigurations || {};
+
+    datatables.defaultConfigurations.scrollX = true;
+
+    datatables.defaultConfigurations.language = function () {
+        return {
+            info: localize("PagerInfo"),
+            infoFiltered: localize("PagerInfoFiltered"),
+            infoEmpty: localize("PagerInfoEmpty"),
+            search: localize("PagerSearch"),
+            processing: localize("ProcessingWithThreeDot"),
+            loadingRecords: localize("LoadingWithThreeDot"),
+            lengthMenu: localize("PagerShowMenuEntries"),
+            emptyTable: localize("NoDataAvailableInDatatable"),
+            paginate: {
+                first: localize("PagerFirst"),
+                last: localize("PagerLast"),
+                previous: localize("PagerPrevious"),
+                next: localize("PagerNext")
+            }
+        };
+    };
+
+    datatables.defaultConfigurations.dom = '<"dataTable_filters"f>rt<"row dataTable_footer"<"col-auto"l><"col-auto"i><"col"p>>';
 
 })(jQuery);

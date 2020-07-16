@@ -1,51 +1,18 @@
-import { Component, OnInit, TrackByFunction, Input, Renderer2 } from '@angular/core';
-import { Observable } from 'rxjs';
-import { ABP, ConfigState } from '@abp/ng.core';
-import { map } from 'rxjs/operators';
-import { Select } from '@ngxs/store';
+import { ABP, RoutesService, TreeNode } from '@abp/ng.core';
+import { Component, Input, TrackByFunction } from '@angular/core';
 
 @Component({
   selector: 'abp-routes',
   templateUrl: 'routes.component.html',
 })
 export class RoutesComponent {
-  @Select(ConfigState.getOne('routes'))
-  routes$: Observable<ABP.FullRoute[]>;
+  @Input() smallScreen: boolean;
 
-  @Input()
-  smallScreen: boolean;
+  trackByFn: TrackByFunction<TreeNode<ABP.Route>> = (_, item) => item.name;
 
-  @Input()
-  isDropdownChildDynamic: boolean;
+  constructor(public readonly routes: RoutesService) {}
 
-  get visibleRoutes$(): Observable<ABP.FullRoute[]> {
-    return this.routes$.pipe(map(routes => getVisibleRoutes(routes)));
+  isDropdown(node: TreeNode<ABP.Route>) {
+    return !node.isLeaf || this.routes.hasChildren(node.name);
   }
-
-  trackByFn: TrackByFunction<ABP.FullRoute> = (_, item) => item.name;
-
-  constructor(private renderer: Renderer2) {}
-
-  openChange(event: boolean, childrenContainer: HTMLDivElement) {
-    if (!event) {
-      Object.keys(childrenContainer.style)
-        .filter(key => Number.isInteger(+key))
-        .forEach(key => {
-          this.renderer.removeStyle(childrenContainer, childrenContainer.style[key]);
-        });
-      this.renderer.removeStyle(childrenContainer, 'left');
-    }
-  }
-}
-
-function getVisibleRoutes(routes: ABP.FullRoute[]) {
-  return routes.reduce((acc, val) => {
-    if (val.invisible) return acc;
-
-    if (val.children && val.children.length) {
-      val.children = getVisibleRoutes(val.children);
-    }
-
-    return [...acc, val];
-  }, []);
 }

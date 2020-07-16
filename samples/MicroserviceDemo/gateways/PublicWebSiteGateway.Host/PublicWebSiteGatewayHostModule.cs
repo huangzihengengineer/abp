@@ -13,6 +13,7 @@ using MsDemo.Shared;
 using Swashbuckle.AspNetCore.Swagger;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.MultiTenancy;
+using Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy;
 using Volo.Abp.Autofac;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore.SqlServer;
@@ -32,7 +33,7 @@ namespace PublicWebSiteGateway.Host
         typeof(AbpEntityFrameworkCoreSqlServerModule),
         typeof(AbpPermissionManagementEntityFrameworkCoreModule),
         typeof(AbpSettingManagementEntityFrameworkCoreModule),
-        typeof(AbpAspNetCoreMultiTenancyModule)
+        typeof(AbpAspNetCoreMvcUiMultiTenancyModule)
         )]
     public class PublicWebSiteGatewayHostModule : AbpModule
     {
@@ -85,21 +86,7 @@ namespace PublicWebSiteGateway.Host
             app.UseVirtualFiles();
             app.UseRouting();
             app.UseAuthentication();
-
-            app.Use(async (ctx, next) =>
-            {
-                var currentPrincipalAccessor = ctx.RequestServices.GetRequiredService<ICurrentPrincipalAccessor>();
-                var map = new Dictionary<string, string>()
-                {
-                    { "sub", AbpClaimTypes.UserId },
-                    { "role", AbpClaimTypes.Role },
-                    { "email", AbpClaimTypes.Email },
-                    //any other map
-                };
-                var mapClaims = currentPrincipalAccessor.Principal.Claims.Where(p => map.Keys.Contains(p.Type)).ToList();
-                currentPrincipalAccessor.Principal.AddIdentity(new ClaimsIdentity(mapClaims.Select(p => new Claim(map[p.Type], p.Value, p.ValueType, p.Issuer))));
-                await next();
-            });
+            app.UseAbpClaimsMap();
             if (MsDemoConsts.IsMultiTenancyEnabled)
             {
                 app.UseMultiTenancy();
@@ -116,7 +103,7 @@ namespace PublicWebSiteGateway.Host
                 app2 =>
                 {
                     app2.UseRouting();
-                    app2.UseMvcWithDefaultRouteAndArea();
+                    app2.UseConfiguredEndpoints();
                 }
             );
 

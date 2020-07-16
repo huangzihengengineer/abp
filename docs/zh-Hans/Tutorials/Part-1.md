@@ -14,7 +14,7 @@ else if UI == "NG"
   DB="mongodb"
   DB_Text="MongoDB"
   UI_Text="angular"
-else 
+else
   DB ="?"
   UI_Text="?"
 end
@@ -185,7 +185,7 @@ EF Core需要你将实体和 `DbContext` 建立关联.最简单的做法是在`A
 ````C#
 public class BookStoreDbContext : AbpDbContext<BookStoreDbContext>
 {
-    public DbSet<Book> Books { get; set; }
+    public DbSet<Book> Book { get; set; }
     ...
 }
 ````
@@ -194,13 +194,13 @@ public class BookStoreDbContext : AbpDbContext<BookStoreDbContext>
 
 {{if DB == "mongodb"}}
 
-添加 `IMongoCollection<Book> Books` 属性到 `Acme.BookStore.MongoDB` 项目的 `BookStoreMongoDbContext` 中.
+添加 `IMongoCollection<Book> Book` 属性到 `Acme.BookStore.MongoDB` 项目的 `BookStoreMongoDbContext` 中.
 
 ```csharp
 public class BookStoreMongoDbContext : AbpMongoDbContext
 {
         public IMongoCollection<AppUser> Users => Collection<AppUser>();
-        public IMongoCollection<Book> Books => Collection<Book>();//<--added this line-->
+        public IMongoCollection<Book> Book => Collection<Book>();//<--added this line-->
         //...
 }
 ```
@@ -216,7 +216,7 @@ public class BookStoreMongoDbContext : AbpMongoDbContext
 ````csharp
 builder.Entity<Book>(b =>
 {
-    b.ToTable(BookStoreConsts.DbTablePrefix + "Books", BookStoreConsts.DbSchema);
+    b.ToTable(BookStoreConsts.DbTablePrefix + "Book", BookStoreConsts.DbSchema);
     b.ConfigureByConvention(); //auto configure for the base class props
     b.Property(x => x.Name).IsRequired().HasMaxLength(128);
 });
@@ -315,20 +315,20 @@ Update-Database
 
 #### 添加示例数据
 
-`Update-Database`命令在数据库中创建了`AppBooks`表. 打开数据库并输入几个示例行,以便在页面上显示它们:
+`Update-Database`命令在数据库中创建了`AppBook`表. 打开数据库并输入几个示例行,以便在页面上显示它们:
 
 ```mssql
-INSERT INTO AppBooks (Id,CreationTime,[Name],[Type],PublishDate,Price) VALUES
+INSERT INTO AppBook (Id,CreationTime,[Name],[Type],PublishDate,Price) VALUES
 ('f3c04764-6bfd-49e2-859e-3f9bfda6183e', '2018-07-01', '1984',3,'1949-06-08','19.84')
 
-INSERT INTO AppBooks (Id,CreationTime,[Name],[Type],PublishDate,Price) VALUES
+INSERT INTO AppBook (Id,CreationTime,[Name],[Type],PublishDate,Price) VALUES
 ('13024066-35c9-473c-997b-83cd8d3e29dc', '2018-07-01', 'The Hitchhiker`s Guide to the Galaxy',7,'1995-09-27','42')
 
-INSERT INTO AppBooks (Id,CreationTime,[Name],[Type],PublishDate,Price) VALUES
+INSERT INTO AppBook (Id,CreationTime,[Name],[Type],PublishDate,Price) VALUES
 ('4fa024a1-95ac-49c6-a709-6af9e4d54b54', '2018-07-02', 'Pet Sematary',5,'1983-11-14','23.7')
 ```
 
-![bookstore-books-table](./images/bookstore-books-table.png)
+![bookstore-book-table](./images/bookstore-book-table.png)
 
 {{end}}
 
@@ -444,7 +444,7 @@ using Volo.Abp.Application.Services;
 
 namespace Acme.BookStore
 {
-    public interface IBookAppService : 
+    public interface IBookAppService :
         ICrudAppService< //定义了CRUD方法
             BookDto, //用来展示书籍
             Guid, //Book实体的主键
@@ -473,12 +473,12 @@ using Volo.Abp.Domain.Repositories;
 
 namespace Acme.BookStore
 {
-    public class BookAppService : 
+    public class BookAppService :
         CrudAppService<Book, BookDto, Guid, PagedAndSortedResultRequestDto,
                             CreateUpdateBookDto, CreateUpdateBookDto>,
         IBookAppService
     {
-        public BookAppService(IRepository<Book, Guid> repository) 
+        public BookAppService(IRepository<Book, Guid> repository)
             : base(repository)
         {
 
@@ -547,13 +547,13 @@ acme.bookStore.book.create({ name: 'Foundation', type: 7, publishDate: '1951-05-
 successfully created the book with id: 439b0ea8-923e-8e1e-5d97-39f2c7ac4246
 ````
 
-检查数据库中的`Books`表以查看新书. 你可以自己尝试`get`,`update`和`delete`功能.
+检查数据库中的`Book`表以查看新书. 你可以自己尝试`get`,`update`和`delete`功能.
 
 ### 创建书籍页面
 
 现在我们来创建一些可见和可用的东西,取代经典的MVC,我们使用微软推荐的[Razor Pages UI](https://docs.microsoft.com/en-us/aspnet/core/tutorials/razor-pages/razor-pages-start).
 
-在 `Acme.BookStore.Web`项目的`Pages`文件夹下创建一个新的文件夹叫`Books`并添加一个名为`Index.cshtml`的Razor Page.
+在 `Acme.BookStore.Web`项目的`Pages`文件夹下创建一个新的文件夹叫`Book`并添加一个名为`Index.cshtml`的Razor Page.
 
 ![bookstore-add-index-page](./images/bookstore-add-index-page-v2.png)
 
@@ -563,22 +563,20 @@ successfully created the book with id: 439b0ea8-923e-8e1e-5d97-39f2c7ac4246
 
 ````html
 @page
-@using Acme.BookStore.Web.Pages.Books
-@inherits Acme.BookStore.Web.Pages.BookStorePage
+@using Acme.BookStore.Web.Pages.Book
 @model IndexModel
 
-<h2>Books</h2>
+<h2>Book</h2>
 ````
 
-* 此代码更改了Razor View Page Model的默认继承,因此它从`BookStorePage`类(而不是`PageModel`)继承.启动模板附带的`BookStorePage`类,提供所有页面使用的一些共享属性/方法.
-* 确保`IndexModel`(Index.cshtml.cs)具有`Acme.BookStore.Web.Pages.Books`命名空间,或者在`Index.cshtml`中更新它.
+* 确保`IndexModel`(Index.cshtml.cs)具有`Acme.BookStore.Web.Pages.Book`命名空间,或者在`Index.cshtml`中更新它.
 
 **Index.cshtml.cs:**
 
 ```csharp
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Acme.BookStore.Web.Pages.Books
+namespace Acme.BookStore.Web.Pages.Book
 {
     public class IndexModel : PageModel
     {
@@ -590,7 +588,7 @@ namespace Acme.BookStore.Web.Pages.Books
 }
 ```
 
-#### 将Books页面添加到主菜单
+#### 将Book页面添加到主菜单
 
 打开`Menus`文件夹中的 `BookStoreMenuContributor` 类,在`ConfigureMainMenuAsync`方法的底部添加如下代码:
 
@@ -599,14 +597,14 @@ namespace Acme.BookStore.Web.Pages.Books
 namespace Acme.BookStore.Web.Menus
 {
     public class BookStoreMenuContributor : IMenuContributor
-    { 
+    {
         private async Task ConfigureMainMenuAsync(MenuConfigurationContext context)
         {
             //<-- added the below code
             context.Menu.AddItem(
-                new ApplicationMenuItem("BooksStore", l["Menu:BookStore"])
+                new ApplicationMenuItem("BookStore", l["Menu:BookStore"])
                     .AddItem(
-                        new ApplicationMenuItem("BooksStore.Books", l["Menu:Books"], url: "/Books")
+                        new ApplicationMenuItem("BookStore.Book", l["Menu:Book"], url: "/Book")
                     )
             );
             //-->
@@ -623,7 +621,7 @@ namespace Acme.BookStore.Web.Menus
 
 ![bookstore-localization-files](./images/bookstore-localization-files-v2.png)
 
-打开`en.json`文件,将`Menu:BookStore`和`Menu:Books`键的本地化文本添加到文件末尾:
+打开`en.json`文件,将`Menu:BookStore`和`Menu:Book`键的本地化文本添加到文件末尾:
 
 ````json
 {
@@ -634,7 +632,7 @@ namespace Acme.BookStore.Web.Menus
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information, visit abp.io.",
 
     "Menu:BookStore": "Book Store",
-    "Menu:Books": "Books",
+    "Menu:Book": "Book",
     "Actions": "Actions",
     "Edit": "Edit",
     "PublishDate": "Publish date",
@@ -655,7 +653,7 @@ namespace Acme.BookStore.Web.Menus
 
 ![bookstore-menu-items](./images/bookstore-new-menu-item.png)
 
-点击BookStore下Books子菜单项就会跳转到新增的书籍页面.
+点击BookStore下Book子菜单项就会跳转到新增的书籍页面.
 
 #### 书籍列表
 
@@ -663,22 +661,21 @@ namespace Acme.BookStore.Web.Menus
 
 ##### Index.cshtml
 
-将`Pages/Books/Index.cshtml`改成下面的样子:
+将`Pages/Book/Index.cshtml`改成下面的样子:
 
 ````html
 @page
-@inherits Acme.BookStore.Web.Pages.BookStorePage
-@model Acme.BookStore.Web.Pages.Books.IndexModel
+@model Acme.BookStore.Web.Pages.Book.IndexModel
 @section scripts
 {
-    <abp-script src="/Pages/Books/index.js" />
+    <abp-script src="/Pages/Book/index.js" />
 }
 <abp-card>
     <abp-card-header>
-        <h2>@L["Books"]</h2>
+        <h2>@L["Book"]</h2>
     </abp-card-header>
     <abp-card-body>
-        <abp-table striped-rows="true" id="BooksTable">
+        <abp-table striped-rows="true" id="BookTable">
             <thead>
                 <tr>
                     <th>@L["Name"]</th>
@@ -699,7 +696,7 @@ namespace Acme.BookStore.Web.Menus
 
 #### 添加脚本文件
 
-在`Pages/Books/`文件夹中创建 `index.js`文件
+在`Pages/Book/`文件夹中创建 `index.js`文件
 
 ![bookstore-index-js-file](./images/bookstore-index-js-file-v2.png)
 
@@ -707,7 +704,7 @@ namespace Acme.BookStore.Web.Menus
 
 ````js
 $(function () {
-    var dataTable = $('#BooksTable').DataTable(abp.libs.datatables.normalizeConfiguration({
+    var dataTable = $('#BookTable').DataTable(abp.libs.datatables.normalizeConfiguration({
         ajax: abp.libs.datatables.createAjax(acme.bookStore.book.getList),
         columnDefs: [
             { data: "name" },
@@ -735,13 +732,13 @@ $(function () {
 
 ### Angular 开发
 
-#### 创建books页面
+#### 创建book页面
 
 是时候创建可见和可用的东西了!开发ABP Angular前端应用程序时,需要使用一些工具:
 
 - [Angular CLI](https://angular.io/cli) 用于创建模块,组件和服务.
-- [NGXS](https://ngxs.gitbook.io/ngxs/) 用于管理状态库.
 - [Ng Bootstrap](https://ng-bootstrap.github.io/#/home) 用做UI组件库.
+- [ngx-datatable](https://swimlane.gitbook.io/ngx-datatable/) 用做 datatable 类库.
 - [Visual Studio Code](https://code.visualstudio.com/) 用做代码编辑器 (你可以选择自己喜欢的编辑器).
 
 #### 安装 NPM 包
@@ -752,104 +749,113 @@ $(function () {
 yarn
 ```
 
-#### BooksModule
+#### BookModule
 
-运行以下命令创建一个名为 `BooksModule` 的新模块:
+运行以下命令创建一个名为 `BookModule` 的新模块:
 
 ```bash
-yarn ng generate module books --route books --module app.module
+yarn ng generate module book --routing true
 ```
 
-![Generating books module](./images/bookstore-creating-books-module-terminal.png)
+![Generating book module](./images/bookstore-creating-book-module-terminal.png)
 
 #### 路由
 
-打开位于 `src\app` 目录下的 `app-routing.module.ts` 文件. 添加新的 `import` 和替换 `books` 路径:
+打开位于 `src\app` 目录下的 `app-routing.module.ts` 文件. 添加新的路由:
 
 ```js
-import { ApplicationLayoutComponent } from '@abp/ng.theme.basic'; //==> added this line to imports <==
+const routes: Routes = [
+// ...
+// added a new route to the routes array
+  {
+    path: 'books',
+    loadChildren: () => import('./book/book.module').then(m => m.BookModule)
+  }
+]
+```
 
-//...replaced original books path with the below
-{
-  path: 'books',
-  component: ApplicationLayoutComponent,
-  loadChildren: () => import('./books/books.module').then(m => m.BooksModule),
-  data: {
-    routes: {
-      name: '::Menu:Books',
-      iconClass: 'fas fa-book'
-    } as ABP.Route
-  },
+* 我们添加了一个懒加载路由. 参阅 [嬾加載功能模块](https://angular.io/guide/lazy-loading-ngmodules#lazy-loading-feature-modules).
+
+打开位于 `src\app` 目录下的 `route.provider.ts` 文件,用以下内容替换它:
+
+```js
+import { RoutesService, eLayoutType } from '@abp/ng.core';
+import { APP_INITIALIZER } from '@angular/core';
+
+export const APP_ROUTE_PROVIDER = [
+  { provide: APP_INITIALIZER, useFactory: configureRoutes, deps: [RoutesService], multi: true },
+];
+
+function configureRoutes(routes: RoutesService) {
+  return () => {
+    routes.add([
+      //...
+      // added below element
+      {
+        path: '/books',
+        name: '::Menu:Books',
+        iconClass: 'fas fa-book',
+        order: 101,
+        layout: eLayoutType.application,
+      },
+    ]);
+  };
 }
 ```
 
-* `ApplicationLayoutComponent` 配置将应用程序布局设置为新页面, 我们添加了 `data` 对象. `name` 是菜单项的名称,`iconClass` 是菜单项的图标.
+* 我们添加了一个新的路由元素在菜单上显示为 "Books" 的导航元素.
+  * `path` 路由的URL.
+  * `name` 菜单项的名称,可以使用本地化Key.
+  * `iconClass` 菜单项的图标.
+  * `order` 菜单项的排序.我们定义了101,它显示在 "Administration" 项的后面.
+  * `layout` BooksModule路由的布局. 可以定义 `eLayoutType.application`, `eLayoutType.account` 或 `eLayoutType.empty`.
 
-运行 `yarn start` 等待Angular为应用程序启动服务:
-
-```bash
-yarn start
-```
-
-打开浏览器导航到 http://localhost:4200/books. 你会看到一个带有 "*books works!*" 的空白页.
-
-![initial-books-page](./images/bookstore-initial-books-page-with-layout.png)
+更多信息请参阅[RoutesService 文档](https://docs.abp.io/en/abp/latest/UI/Angular/Modifying-the-Menu.md#via-routesservice).
 
 #### Book 列表组件
-
-用以下内容替换 `books.component.html`:
-
-```html
-<router-outlet></router-outlet>
-```
 
 在命令行运行以下命令,生成名为 book-list 的新组件:
 
 ```bash
-yarn ng generate component books/book-list
+yarn ng generate component book/book-list
 ```
 
-![Creating books list](./images/bookstore-creating-book-list-terminal.png)
+![Creating book list](./images/bookstore-creating-book-list-terminal.png)
 
-打开 `app\books` 目录下的 `books.module.ts` 文件,使用以下内容替换它:
+打开 `app\book` 目录下的 `book.module.ts` 文件,使用以下内容替换它:
 
 ```js
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { BooksRoutingModule } from './books-routing.module';
-import { BooksComponent } from './books.component';
+import { BookRoutingModule } from './book-routing.module';
 import { BookListComponent } from './book-list/book-list.component';
 import { SharedModule } from '../shared/shared.module'; //<== added this line ==>
 
 @NgModule({
-  declarations: [BooksComponent, BookListComponent],
+  declarations: [BookListComponent],
   imports: [
     CommonModule,
-    BooksRoutingModule,
+    BookRoutingModule,
     SharedModule, //<== added this line ==>
-  ]
+  ],
 })
-export class BooksModule { }
+export class BookModule {}
 ```
 
 * 我们导入了 `SharedModule` 并添加到 `imports` 数组.
 
-打开 `app\books` 目录下的 `books-routing.module.ts` 文件用以下内容替换它:
+打开 `app\book` 目录下的 `book-routing.module.ts` 文件用以下内容替换它:
 
 ```js
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { BookListComponent } from './book-list/book-list.component'; // <== added this line ==>
 
-import { BooksComponent } from './books.component';
-import { BookListComponent } from './book-list/book-list.component'; //<== added this line ==>
-
-//<== replaced routes ==>
+// <== replaced routes ==>
 const routes: Routes = [
   {
     path: '',
-    component: BooksComponent,
-    children: [{ path: '', component: BookListComponent }],
+    component: BookListComponent,
   },
 ];
 
@@ -857,43 +863,20 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class BooksRoutingModule { }
+export class BookRoutingModule { }
 ```
 
 * 我们导入了 `BookListComponent` 并替换 `routes` 常量.
 
-我们将看到books页面的 **book-list works!**:
-
-![Initial book list page](./images/bookstore-initial-book-list-page.png)
-
-#### 创建 BooksState
-
-运行以下命令创建名为 `BooksState` 的新state:
+运行 `yarn start`,等待Angular启动服务:
 
 ```bash
-npx @ngxs/cli --name books --directory src/app/books
+yarn start
 ```
 
-* 此命令在 `src/app/books/state` 文件夹下创建了 `books.state.ts` 和 `books.actions.ts` 文件. 参阅 [NGXS CLI文档](https://www.ngxs.io/plugins/cli)了解更多.
+我们将看到book页面的 **book-list works!**:
 
-将 `BooksState` 导入到 `src/app` 文件夹中的 `app.module.ts` 中. 然后添加 `BooksState` 到 `NgxsModule` 的 `forRoot` 静态方法,作为该方法的第一个参数的数组元素.
-
-```js
-// ...
-import { BooksState } from './books/state/books.state'; //<== imported BooksState ==>
-
-@NgModule({
-  imports: [
-    // other imports
-
-    NgxsModule.forRoot([BooksState]), //<== added BooksState ==>
-
-    //other imports
-  ],
-  // ...
-})
-export class AppModule {}
-```
+![Initial book list page](./images/bookstore-initial-book-list-page.png)
 
 #### 生成代理
 
@@ -911,111 +894,43 @@ abp generate-proxy --module app
 
 ![Generated files](./images/generated-proxies.png)
 
-#### GetBooks 动作
-
-动作可以被认为是一个命令,它应该触发某些事情发生,或者是已经发生的事情的结果事件.[See NGXS Actions文档](https://www.ngxs.io/concepts/actions).
-
-打开 `app/books/state` 目录下的 `books.actions.ts` 文件用以下内容替换它:
-
-```js
-export class GetBooks {
-  static readonly type = '[Books] Get';
-}
-```
-
-#### 实现 BooksState
-
-打开 `app/books/state` 目录下的 `books.state.ts` 文件用以下内容替换它:
-
-```js
-import { PagedResultDto } from '@abp/ng.core';
-import { State, Action, StateContext, Selector } from '@ngxs/store';
-import { GetBooks } from './books.actions';
-import { BookService } from '../../app/shared/services';
-import { tap } from 'rxjs/operators';
-import { Injectable } from '@angular/core';
-import { BookDto } from '../../app/shared/models';
-
-export class BooksStateModel {
-  public book: PagedResultDto<BookDto>;
-}
-
-@State<BooksStateModel>({
-  name: 'BooksState',
-  defaults: { book: {} } as BooksStateModel,
-})
-@Injectable()
-export class BooksState {
-  @Selector()
-  static getBooks(state: BooksStateModel) {
-    return state.book.items || [];
-  }
-
-  constructor(private bookService: BookService) {}
-
-  @Action(GetBooks)
-  get(ctx: StateContext<BooksStateModel>) {
-    return this.bookService.getListByInput().pipe(
-      tap((booksResponse) => {
-        ctx.patchState({
-          book: booksResponse,
-        });
-      })
-    );
-  }
-}
-```
-
-* 我们添加了book属性到BooksStateModel模态框.
-* 我们添加了 `GetBooks` 动作. 它通过 ABP CLI生成的 `BooksService` 检索图书数据.
-* `NGXS` 需要在不订阅get函数的情况下返回被观察对象.
-
 #### BookListComponent
 
-打开 `app\books\book-list` 目录下的 `book-list.component.ts` 用以下内容替换它:
+打开 `app\book\book-list` 目录下的 `book-list.component.ts` 用以下内容替换它:
 
 ```js
+import { ListService, PagedResultDto } from '@abp/ng.core';
 import { Component, OnInit } from '@angular/core';
-import { Select, Store } from '@ngxs/store';
-import { Observable } from 'rxjs';
-import { finalize } from 'rxjs/operators';
-import { BookDto, BookType } from '../../app/shared/models';
-import { GetBooks } from '../state/books.actions';
-import { BooksState } from '../state/books.state';
+import { BookDto, BookType } from '../models';
+import { BookService } from '../services';
 
 @Component({
   selector: 'app-book-list',
   templateUrl: './book-list.component.html',
   styleUrls: ['./book-list.component.scss'],
+  providers: [ListService],
 })
 export class BookListComponent implements OnInit {
-  @Select(BooksState.getBooks)
-  books$: Observable<BookDto[]>;
+  book = { items: [], totalCount: 0 } as PagedResultDto<BookDto>;
 
   booksType = BookType;
 
-  loading = false;
-
-  constructor(private store: Store) {}
+  constructor(public readonly list: ListService, private bookService: BookService) {}
 
   ngOnInit() {
-    this.get();
-  }
+    const bookStreamCreator = (query) => this.bookService.getListByInput(query);
 
-  get() {
-    this.loading = true;
-    this.store
-      .dispatch(new GetBooks())
-      .pipe(finalize(() => (this.loading = false)))
-      .subscribe(() => {});
+    this.list.hookToQuery(bookStreamCreator).subscribe((response) => {
+      this.book = response;
+    });
   }
 }
 ```
 
-* 我们添加了 `get` 函数获取books更新store.
-* 有关 `NGXS` 特性的更多信息请参见NGXS文档中的[Dispatching actions](https://ngxs.gitbook.io/ngxs/concepts/store#dispatching-actions)和[Select](https://ngxs.gitbook.io/ngxs/concepts/select).
+* 我们注入了生成的 `BookService`.
+* 我们实现了 [ListService](https://docs.abp.io/en/abp/latest/UI/Angular/List-Service),它是一个公用服务,提供了简单的分页,排序和搜索.
 
-打开 `app\books\book-list` 目录下的 `book-list.component.html` 用以下内容替换它:
+打开 `app\book\book-list` 目录下的 `book-list.component.html` 用以下内容替换它:
 
 ```html
 <div class="card">
@@ -1023,38 +938,31 @@ export class BookListComponent implements OnInit {
     <div class="row">
       <div class="col col-md-6">
         <h5 class="card-title">
-          {%{{{ "::Menu:Books" | abpLocalization }}}%}
+          {%{{{ '::Menu:Books' | abpLocalization }}}%}
         </h5>
       </div>
       <div class="text-right col col-md-6"></div>
     </div>
   </div>
   <div class="card-body">
-    <abp-table
-      [value]="books$ | async"
-      [abpLoading]="loading"
-      [headerTemplate]="tableHeader"
-      [bodyTemplate]="tableBody"
-      [rows]="10"
-      [scrollable]="true"
-    >
-    </abp-table>
-    <ng-template #tableHeader>
-      <tr>
-        <th>{%{{{ "::Name" | abpLocalization }}}%}</th>
-        <th>{%{{{ "::Type" | abpLocalization }}}%}</th>
-        <th>{%{{{ "::PublishDate" | abpLocalization }}}%}</th>
-        <th>{%{{{ "::Price" | abpLocalization }}}%}</th>
-      </tr>
-    </ng-template>
-    <ng-template #tableBody let-data>
-      <tr>
-        <td>{%{{{ data.name }}}%}</td>
-        <td>{%{{{ booksType[data.type] }}}%}</td>
-        <td>{%{{{ data.publishDate | date }}}%}</td>
-        <td>{%{{{ data.price }}}%}</td>
-      </tr>
-    </ng-template>
+    <ngx-datatable [rows]="book.items" [count]="book.totalCount" [list]="list" default>
+      <ngx-datatable-column [name]="'::Name' | abpLocalization" prop="name"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'::Type' | abpLocalization" prop="type">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {%{{{ booksType[row.type] }}}%}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::PublishDate' | abpLocalization" prop="publishDate">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {%{{{ row.publishDate | date }}}%}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column [name]="'::Price' | abpLocalization" prop="price">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          {%{{{ row.price | currency }}}%}
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
   </div>
 </div>
 ```

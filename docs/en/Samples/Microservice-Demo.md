@@ -28,7 +28,7 @@ The diagram below shows the system:
 
 ### Source Code
 
-You can get the source code from [the GitHub repository](https://github.com/abpframework/abp/tree/master/samples/MicroserviceDemo).
+You can get the source code from [the GitHub repository](https://github.com/abpframework/abp-samples/tree/master/MicroserviceDemo).
 
 ## Running the Solution
 
@@ -552,7 +552,7 @@ app.MapWhen(ctx => ctx.Request.Path.ToString().StartsWith("/api/abp/") ||
                    ctx.Request.Path.ToString().StartsWith("/Abp/"),
     app2 =>
     {
-        app2.UseMvcWithDefaultRouteAndArea();
+        app2.UseConfiguredEndpoints();
     });
 
 app.UseOcelot().Wait();

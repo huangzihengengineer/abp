@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -8,7 +8,6 @@ using ProductManagement;
 using StackExchange.Redis;
 using Microsoft.OpenApi.Models;
 using MsDemo.Shared;
-using Swashbuckle.AspNetCore.Swagger;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Authentication.OAuth;
 using Volo.Abp.AspNetCore.Mvc.Client;
@@ -119,18 +118,20 @@ namespace BackendAdminApp.Host
             app.UseVirtualFiles();
             app.UseRouting();
             app.UseAuthentication();
+            
             if (MsDemoConsts.IsMultiTenancyEnabled)
             {
                 app.UseMultiTenancy();
             }
-            app.UseAuthorization();
+
             app.UseAbpRequestLocalization();
+            app.UseAuthorization();
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "Backend Admin Application API");
             });
-            app.UseMvcWithDefaultRouteAndArea();
+            app.UseConfiguredEndpoints();
         }
     }
 }

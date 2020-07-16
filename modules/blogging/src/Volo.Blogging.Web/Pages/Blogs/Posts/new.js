@@ -94,7 +94,7 @@
             var validationResult = $form.validate();
             abp.message.warn(validationResult.errorList[0].message); //TODO: errors can be merged into lines. make sweetalert accept HTML.
             e.preventDefault();
-            return false; //for old browsers 
+            return false; //for old browsers
         }
 
         $submitButton.buttonBusy();
@@ -118,7 +118,11 @@
             $titleLengthWarning.hide();
         }
 
+        title = title.replace(' &', ' ');
+        title = title.replace('& ', ' ');
+        title = title.replace('&', '');
         title = title.replace(' ', '-');
+        title = title.replace('/', '-');
         title = title.replace(new RegExp(' ', 'g'), '-');
         reflectedChange = true;
         $url.val(title);
