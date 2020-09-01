@@ -58,7 +58,10 @@ $projects = (
     "framework/src/Volo.Abp.BackgroundWorkers.Quartz",
     "framework/src/Volo.Abp.BlobStoring",
     "framework/src/Volo.Abp.BlobStoring.FileSystem",
+    "framework/src/Volo.Abp.BlobStoring.Aliyun",
     "framework/src/Volo.Abp.BlobStoring.Azure",
+    "framework/src/Volo.Abp.BlobStoring.Minio",
+    "framework/src/Volo.Abp.BlobStoring.Aws",
     "framework/src/Volo.Abp.Caching",
     "framework/src/Volo.Abp.Caching.StackExchangeRedis",
     "framework/src/Volo.Abp.Castle.Core",
@@ -81,8 +84,10 @@ $projects = (
     "framework/src/Volo.Abp.EntityFrameworkCore.SqlServer",
     "framework/src/Volo.Abp.EventBus",
     "framework/src/Volo.Abp.EventBus.RabbitMQ",
+    "framework/src/Volo.Abp.EventBus.Kafka",
     "framework/src/Volo.Abp.Features",
     "framework/src/Volo.Abp.FluentValidation",
+    "framework/src/Volo.Abp.GlobalFeatures",
     "framework/src/Volo.Abp.Guids",
     "framework/src/Volo.Abp.HangFire",
     "framework/src/Volo.Abp.Http.Abstractions",
@@ -119,6 +124,7 @@ $projects = (
     "framework/src/Volo.Abp.Validation.Abstractions",
     "framework/src/Volo.Abp.Validation",
     "framework/src/Volo.Abp.VirtualFileSystem",
+    "framework/src/Volo.Abp.Kafka"
 
     # modules/account
     "modules/account/src/Volo.Abp.Account.Application.Contracts",
@@ -141,6 +147,7 @@ $projects = (
     "modules/background-jobs/src/Volo.Abp.BackgroundJobs.MongoDB",
 
     # modules/blogging
+    "modules/blogging/src/Volo.Blogging.Application.Contracts.Shared",
     "modules/blogging/src/Volo.Blogging.Application.Contracts",
     "modules/blogging/src/Volo.Blogging.Application",
     "modules/blogging/src/Volo.Blogging.Domain",

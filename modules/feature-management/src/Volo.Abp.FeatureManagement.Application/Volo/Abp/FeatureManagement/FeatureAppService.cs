@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Volo.Abp.Application.Services;
 using Volo.Abp.Features;
 
 namespace Volo.Abp.FeatureManagement
@@ -37,6 +33,7 @@ namespace Volo.Abp.FeatureManagement
 
             foreach (var featureDefinition in featureDefinitions)
             {
+                var feature = await FeatureManager.GetOrNullWithProviderAsync(featureDefinition.Name, providerName, providerKey);
                 features.Add(new FeatureDto
                 {
                     Name = featureDefinition.Name,
@@ -44,7 +41,12 @@ namespace Volo.Abp.FeatureManagement
                     ValueType = featureDefinition.ValueType,
                     Description = featureDefinition.Description?.Localize(StringLocalizerFactory),
                     ParentName = featureDefinition.Parent?.Name,
-                    Value = await FeatureManager.GetOrNullAsync(featureDefinition.Name, providerName, providerKey)
+                    Value = feature.Value,
+                    Provider = new FeatureProviderDto
+                    {
+                        Name = feature.Provider?.Name,
+                        Key = feature.Provider?.Key
+                    }
                 });
             }
 
