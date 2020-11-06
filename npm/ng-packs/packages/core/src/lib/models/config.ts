@@ -10,6 +10,7 @@ export namespace Config {
     apis: Apis;
     application: Application;
     hmr?: boolean;
+    test?: boolean;
     localization?: { defaultResourceName?: string };
     oAuthConfig: AuthConfig;
     production: boolean;
@@ -22,11 +23,12 @@ export namespace Config {
     logoUrl?: string;
   }
 
-  export interface ApiConfig {
+  export type ApiConfig = {
     [key: string]: string;
-    rootNamespace?: string;
     url: string;
-  }
+  } & Partial<{
+    rootNamespace: string;
+  }>;
 
   export interface Apis {
     [key: string]: ApiConfig;

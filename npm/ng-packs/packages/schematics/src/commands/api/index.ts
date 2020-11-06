@@ -1,4 +1,4 @@
-import { normalize, strings } from '@angular-devkit/core';
+import { normalize } from '@angular-devkit/core';
 import {
   applyTemplates,
   branchAndMerge,
@@ -19,10 +19,10 @@ import {
   createImportRefToEnumMapper,
   createProxyConfigReader,
   createProxyConfigWriterCreator,
+  createRootNamespaceGetter,
   EnumGeneratorParams,
   generateProxyConfigJson,
   getEnumNamesFromImports,
-  getRootNamespace,
   interpolate,
   ModelGeneratorParams,
   removeDefaultPlaceholders,
@@ -33,13 +33,14 @@ import * as cases from '../../utils/text';
 
 export default function(schema: GenerateProxySchema) {
   const params = removeDefaultPlaceholders(schema);
-  const moduleName = strings.camelize(params.module || 'app');
+  const moduleName = params.module || 'app';
 
   return chain([
     async (tree: Tree, _context: SchematicContext) => {
-      const source = await resolveProject(tree, params.source!);
+      const getRootNamespace = createRootNamespaceGetter(params);
+      const solution = await getRootNamespace(tree);
+
       const target = await resolveProject(tree, params.target!);
-      const solution = getRootNamespace(tree, source, moduleName);
       const targetPath = buildDefaultPath(target.definition);
       const readProxyConfig = createProxyConfigReader(targetPath);
       const createProxyConfigWriter = createProxyConfigWriterCreator(targetPath);

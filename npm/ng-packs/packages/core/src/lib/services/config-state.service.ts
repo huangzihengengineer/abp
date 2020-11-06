@@ -17,6 +17,10 @@ export class ConfigStateService {
     return this.store.selectSnapshot(ConfigState.getApplicationInfo);
   }
 
+  getEnvironment() {
+    return this.store.selectSnapshot(ConfigState.getEnvironment);
+  }
+
   getOne(...args: Parameters<typeof ConfigState.getOne>) {
     return this.store.selectSnapshot(ConfigState.getOne(...args));
   }
@@ -41,12 +45,17 @@ export class ConfigStateService {
     return this.store.selectSnapshot(ConfigState.getSettings(...args));
   }
 
+  /** @deprecated Use PermissionService's getGrantedPolicySnapshot method */
   getGrantedPolicy(...args: Parameters<typeof ConfigState.getGrantedPolicy>) {
     return this.store.selectSnapshot(ConfigState.getGrantedPolicy(...args));
   }
 
   getLocalization(...args: Parameters<typeof ConfigState.getLocalization>) {
     return this.store.selectSnapshot(ConfigState.getLocalization(...args));
+  }
+
+  getLocalizationResource(...args: Parameters<typeof ConfigState.getLocalizationResource>) {
+    return this.store.selectSnapshot(ConfigState.getLocalizationResource(...args));
   }
 
   dispatchGetAppConfiguration() {

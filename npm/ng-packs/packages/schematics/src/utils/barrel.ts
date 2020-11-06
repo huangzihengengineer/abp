@@ -21,7 +21,7 @@ export function generateBarrelFromPath(tree: Tree, indexPath: string) {
   const _exports: string[] = [];
 
   dir.subfiles.forEach(fragment => {
-    if (!fragment.endsWith('.ts')) return;
+    if (!fragment.endsWith('.ts') || fragment === 'index.ts') return;
 
     _exports.push(`export * from './${fragment.replace(/\.ts$/, '')}';`);
   });
@@ -43,6 +43,8 @@ export function generateBarrelFromPath(tree: Tree, indexPath: string) {
     saveFile(
       indexPath + '/index.ts',
       _exports.join(`
-`),
+`) +
+        `
+`,
     );
 }
