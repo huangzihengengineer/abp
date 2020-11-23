@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,7 +28,7 @@ namespace Volo.Abp.Cli.Bundling
             var projectFiles = Directory.GetFiles(directory, "*.csproj");
             if (!projectFiles.Any())
             {
-                throw new BundlingException("No project file found in the directory");
+                throw new BundlingException("No project file found in the directory. The working directory must have a Blazor project file.");
             }
 
             var projectFilePath = projectFiles[0];
@@ -40,7 +39,8 @@ namespace Volo.Abp.Cli.Bundling
                 {
                     new DotNetProjectInfo(string.Empty, projectFilePath, true)
                 };
-                DotNetProjectBuilder.Build(projects, string.Empty);
+
+                DotNetProjectBuilder.BuildProjects(projects, string.Empty);
             }
 
             var frameworkVersion = GetTargetFrameworkVersion(projectFilePath);
@@ -51,13 +51,42 @@ namespace Volo.Abp.Cli.Bundling
             FindBundleContributersRecursively(startupModule, 0, bundleDefinitions);
             bundleDefinitions = bundleDefinitions.OrderByDescending(t => t.Level).ToList();
 
-            var styleDefinitons = GenerateStyleDefinitions(bundleDefinitions);
-            var scriptDefinitions = GenerateScriptDefinitions(bundleDefinitions);
+            var styleContext = GetStyleContext(bundleDefinitions);
+            var scriptContext = GetScriptContext(bundleDefinitions);
+            var styleDefinitions = GenerateStyleDefinitions(styleContext);
+            var scriptDefinitions = GenerateScriptDefinitions(scriptContext);
 
-            await UpdateDependenciesInHtmlFileAsync(directory, styleDefinitons, scriptDefinitions);
+            await UpdateDependenciesInHtmlFileAsync(directory, styleDefinitions, scriptDefinitions);
         }
 
-        protected virtual async Task UpdateDependenciesInHtmlFileAsync(string directory, string styleDefinitions, string scriptDefinitions)
+        private BundleContext GetScriptContext(List<BundleTypeDefinition> bundleDefinitions)
+        {
+            var scriptContext = new BundleContext();
+
+            foreach (var bundleDefinition in bundleDefinitions)
+            {
+                var contributer = CreateContributerInstance(bundleDefinition.BundleContributerType);
+                contributer.AddScripts(scriptContext);
+            }
+
+            scriptContext.Add("_framework/blazor.webassembly.js");
+            return scriptContext;
+        }
+
+        private BundleContext GetStyleContext(List<BundleTypeDefinition> bundleDefinitions)
+        {
+            var styleContext = new BundleContext();
+
+            foreach (var bundleDefinition in bundleDefinitions)
+            {
+                var contributer = CreateContributerInstance(bundleDefinition.BundleContributerType);
+                contributer.AddStyles(styleContext);
+            }
+
+            return styleContext;
+        }
+
+        private async Task UpdateDependenciesInHtmlFileAsync(string directory, string styleDefinitions, string scriptDefinitions)
         {
             var htmlFilePath = Path.Combine(directory, "wwwroot", "index.html");
             if (!File.Exists(htmlFilePath))
@@ -76,9 +105,11 @@ namespace Volo.Abp.Cli.Bundling
             content = UpdatePlaceholders(content, StylePlaceholderStart, StylePlaceholderEnd, styleDefinitions);
             content = UpdatePlaceholders(content, ScriptPlaceholderStart, ScriptPlaceholderEnd, scriptDefinitions);
 
-            using var writer = new StreamWriter(htmlFilePath, false, fileEncoding);
-            await writer.WriteAsync(content);
-            await writer.FlushAsync();
+            using (var writer = new StreamWriter(htmlFilePath, false, fileEncoding))
+            {
+                await writer.WriteAsync(content);
+                await writer.FlushAsync();
+            }
         }
 
         private string UpdatePlaceholders(string content, string placeholderStart, string placeholderEnd, string definitions)
@@ -89,88 +120,70 @@ namespace Volo.Abp.Cli.Bundling
             return updatedContent.Insert(placeholderStartIndex, definitions);
         }
 
-        private string GenerateStyleDefinitions(List<BundleTypeDefinition> bundleDefinitions)
+        private string GenerateStyleDefinitions(BundleContext context)
         {
-            var styles = new List<BundleDefinition>();
-            foreach (var bundleDefinition in bundleDefinitions)
+            var builder = new StringBuilder();
+
+            builder.AppendLine($"{StylePlaceholderStart}");
+
+            foreach (var style in context.BundleDefinitions)
             {
-                var contributer = CreateContributerInstance(bundleDefinition.BundleContributerType);
-                contributer.AddStyles(styles);
+                builder.Append($"    <link href=\"{style.Source}\" rel=\"stylesheet\"");
+
+                foreach (var additionalProperty in style.AdditionalProperties)
+                {
+                    builder.Append($"{additionalProperty.Key}={additionalProperty.Value} ");
+                }
+
+                builder.AppendLine("/>");
             }
 
-            var builder = new StringBuilder();
-            builder.AppendLine($"{StylePlaceholderStart}");
-            foreach (var style in styles)
-            {
-                if (style.AdditionalProperties != null && style.AdditionalProperties.Any())
-                {
-                    builder.Append($"\t<link href=\"{style.Source}\" rel=\"stylesheet\" ");
-                    foreach (var additionalProperty in style.AdditionalProperties)
-                    {
-                        builder.Append($"{additionalProperty.Key}={additionalProperty.Value} ");
-                    }
-                    builder.AppendLine("/>");
-                }
-                else
-                {
-                    builder.AppendLine($"\t<link href=\"{style.Source}\" rel=\"stylesheet\" />");
-                }
-            }
-            builder.Append($"\t{StylePlaceholderEnd}");
+            builder.Append($"    {StylePlaceholderEnd}");
 
             return builder.ToString();
         }
 
-        private string GenerateScriptDefinitions(List<BundleTypeDefinition> bundleDefinitions)
+        private string GenerateScriptDefinitions(BundleContext context)
         {
-            var scripts = new List<BundleDefinition>
-            {
-                new BundleDefinition("_framework/blazor.webassembly.js")
-            };
-            foreach (var bundleDefinition in bundleDefinitions)
-            {
-                var contributer = CreateContributerInstance(bundleDefinition.BundleContributerType);
-                contributer.AddScripts(scripts);
-            }
-
             var builder = new StringBuilder();
             builder.AppendLine($"{ScriptPlaceholderStart}");
-            foreach (var script in scripts)
+            foreach (var script in context.BundleDefinitions)
             {
-                if (script.AdditionalProperties != null && script.AdditionalProperties.Any())
+                builder.Append($"    <script src=\"{script.Source}\"");
+                foreach (var additionalProperty in script.AdditionalProperties)
                 {
-                    builder.Append($"\t<script src=\"{script.Source}\" ");
-                    foreach (var additionalProperty in script.AdditionalProperties)
-                    {
-                        builder.Append($"{additionalProperty.Key}={additionalProperty.Value} ");
-                    }
-                    builder.AppendLine("></script>");
+                    builder.Append($"{additionalProperty.Key}={additionalProperty.Value} ");
                 }
-                else
-                {
-                    builder.AppendLine($"\t<script src=\"{script.Source}\"></script>");
-                }
+                builder.AppendLine("></script>");
             }
-            builder.Append($"\t{ScriptPlaceholderEnd}");
+            builder.Append($"    {ScriptPlaceholderEnd}");
 
             return builder.ToString();
         }
 
-        private IBundleContributer CreateContributerInstance(Type bundleContributerType)
+        private IBundleContributor CreateContributerInstance(Type bundleContributerType)
         {
-            var instance = Activator.CreateInstance(bundleContributerType);
-            return instance.As<IBundleContributer>();
+            return (IBundleContributor)Activator.CreateInstance(bundleContributerType);
         }
 
-        private void FindBundleContributersRecursively(Type module, int level, List<BundleTypeDefinition> bundleDefinitions)
+        private void FindBundleContributersRecursively(
+            Type module,
+            int level,
+            List<BundleTypeDefinition> bundleDefinitions)
         {
-            var dependencyDescriptors = module
-                .GetCustomAttributes()
-                .OfType<IDependedTypesProvider>();
+            var bundleContributers = module.Assembly
+                .GetTypes()
+                .Where(t => t.IsAssignableTo<IBundleContributor>())
+                .ToList();
 
-            var bundleContributer = module.Assembly.GetTypes().SingleOrDefault(t => t.IsAssignableTo<IBundleContributer>());
-            if (bundleContributer != null)
+            if (bundleContributers.Count > 1)
             {
+                throw new BundlingException($"Each project must contain only one class implementing {nameof(IBundleContributor)}");
+            }
+
+            if (bundleContributers.Any())
+            {
+                var bundleContributer = bundleContributers[0];
                 var definition = bundleDefinitions.SingleOrDefault(t => t.BundleContributerType == bundleContributer);
                 if (definition != null)
                 {
@@ -189,6 +202,10 @@ namespace Volo.Abp.Cli.Bundling
                 }
             }
 
+            var dependencyDescriptors = module
+                .GetCustomAttributes()
+                .OfType<IDependedTypesProvider>();
+
             foreach (var descriptor in dependencyDescriptors)
             {
                 foreach (var dependedModuleType in descriptor.GetDependedTypes())
@@ -200,19 +217,10 @@ namespace Volo.Abp.Cli.Bundling
 
         private Type GetStartupModule(string assemblyPath)
         {
-            var assembly = Assembly.LoadFrom(assemblyPath);
-            return assembly.GetTypes().SingleOrDefault(IsAbpModule);
-
-            static bool IsAbpModule(Type type)
-            {
-                var typeInfo = type.GetTypeInfo();
-
-                return
-                    typeInfo.IsClass &&
-                    !typeInfo.IsAbstract &&
-                    !typeInfo.IsGenericType &&
-                    typeof(IAbpModule).GetTypeInfo().IsAssignableFrom(type);
-            }
+            return Assembly
+                .LoadFrom(assemblyPath)
+                .GetTypes()
+                .SingleOrDefault(AbpModule.IsAbpModule);
         }
 
         private string GetFrameworkFolderPath(string projectDirectory, string frameworkVersion)
@@ -225,15 +233,12 @@ namespace Volo.Abp.Cli.Bundling
             var document = new XmlDocument();
             document.Load(projectFilePath);
             var sdk = document.DocumentElement.GetAttribute("Sdk");
-            if (sdk == SupportedWebAssemblyProjectType)
-            {
-                var frameworkVersion = document.SelectSingleNode("//TargetFramework").InnerText;
-                return frameworkVersion;
-            }
-            else
+            if (sdk != SupportedWebAssemblyProjectType)
             {
                 throw new BundlingException($"Unsupported project type. Project type must be {SupportedWebAssemblyProjectType}.");
             }
+
+            return document.SelectSingleNode("//TargetFramework").InnerText;
         }
 
         private string GetAssemblyFilePath(string directory, string frameworkVersion, string projectFileName)

@@ -1,16 +1,17 @@
-import { ConfigState } from '../states';
-import { Store } from '@ngxs/store';
-import { map } from 'rxjs/operators';
-import { ApplicationConfiguration } from '../models/application-configuration';
-import snq from 'snq';
 import { Injectable } from '@angular/core';
+import { map, tap } from 'rxjs/operators';
+import snq from 'snq';
+import { ApplicationConfiguration } from '../models/application-configuration';
+import { ConfigStateService } from './config-state.service';
 
 @Injectable({ providedIn: 'root' })
 export class PermissionService {
-  constructor(private store: Store) {}
+  constructor(private configState: ConfigStateService) {}
 
   getGrantedPolicy$(key: string) {
-    return this.getStream().pipe(map(policies => this.isPolicyGranted(key, policies)));
+    return this.getStream().pipe(
+      map(grantedPolicies => this.isPolicyGranted(key, grantedPolicies)),
+    );
   }
 
   getGrantedPolicy(key: string) {
@@ -18,7 +19,7 @@ export class PermissionService {
     return this.isPolicyGranted(key, policies);
   }
 
-  private isPolicyGranted(key: string, policies: ApplicationConfiguration.Policy) {
+  private isPolicyGranted(key: string, grantedPolicies: ApplicationConfiguration.Policy) {
     if (!key) return true;
 
     const orRegexp = /\|\|/g;
@@ -30,31 +31,31 @@ export class PermissionService {
 
       if (keys.length < 2) return false;
 
-      return keys.some(k => this.getPolicy(k.trim(), policies));
+      return keys.some(k => this.getPolicy(k.trim(), grantedPolicies));
     } else if (andRegexp.test(key)) {
       const keys = key.split('&&').filter(Boolean);
 
       if (keys.length < 2) return false;
 
-      return keys.every(k => this.getPolicy(k.trim(), policies));
+      return keys.every(k => this.getPolicy(k.trim(), grantedPolicies));
     }
 
-    return this.getPolicy(key, policies);
+    return this.getPolicy(key, grantedPolicies);
   }
 
   private getStream() {
-    return this.store.select(ConfigState).pipe(map(this.mapToPolicies));
+    return this.configState.getAll$().pipe(map(this.mapToPolicies));
   }
 
   private getSnapshot() {
-    return this.mapToPolicies(this.store.selectSnapshot(ConfigState));
+    return this.mapToPolicies(this.configState.getAll());
   }
 
   private mapToPolicies(applicationConfiguration: ApplicationConfiguration.Response) {
     return snq(() => applicationConfiguration.auth.grantedPolicies);
   }
 
-  private getPolicy(policy: string, policies: ApplicationConfiguration.Policy) {
-    return snq(() => policies[policy], false);
+  private getPolicy(key: string, grantedPolicies: ApplicationConfiguration.Policy) {
+    return snq(() => grantedPolicies[key], false);
   }
 }

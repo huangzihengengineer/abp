@@ -41,6 +41,7 @@ Here, the list of all available commands before explaining their details:
 * **`login`**: Authenticates on your computer with your [abp.io](https://abp.io/) username and password.
 * **`logout`**: Logouts from your computer if you've authenticated before.
 * **`build`**: Builds a GIT repository and depending repositories or a single .NET solution.
+* **`bundle`**: Generates script and style references for an ABP Blazor project. 
 
 ### help
 
@@ -178,7 +179,7 @@ abp add-module Volo.Blogging
 * This example adds the `Volo.Blogging` module to the solution.
 
 ```bash
-abp add-module ProductManagement --new-template --add-to-solution-file
+abp add-module ProductManagement --new --add-to-solution-file
 ```
 
 * This command creates a fresh new module customized for your solution (named `ProductManagement`) and adds it to your solution.
@@ -189,8 +190,8 @@ abp add-module ProductManagement --new-template --add-to-solution-file
 * `--solution` or `-s`: Specifies the solution (.sln) file path. If not specified, CLI tries to find a .sln file in the current directory.
 * `--skip-db-migrations`: For EF Core database provider, it automatically adds a new code first migration (`Add-Migration`) and updates the database (`Update-Database`) if necessary. Specify this option to skip this operation.
 * `-sp` or `--startup-project`: Relative path to the project folder of the startup project. Default value is the current folder.
-* `--new-template`: Creates a fresh new module (customized for your solution) and adds it to your solution.
-* `--with-source-code`: Downloads the source code of the module to your solution folder and uses local project references instead of NuGet/NPM packages. This options is always `True` if `--new-template` is used.
+* `--new`: Creates a fresh new module (customized for your solution) and adds it to your solution.
+* `--with-source-code`: Downloads the source code of the module to your solution folder and uses local project references instead of NuGet/NPM packages. This options is always `True` if `--new` is used.
 * `--add-to-solution-file`: Adds the downloaded/created module to your solution file, so you will also see the projects of the module when you open the solution on a IDE. (only available when `--with-source-code` is `True`.)
 
 ### get-source
@@ -400,3 +401,20 @@ abp build --build-name "prod" --dotnet-build-arguments "\"--no-dependencies\""
 
 For more details, see [build command documentation](CLI-BuildCommand.md).
 
+
+#### bundle
+
+This command generates script and style references for an ABP Blazor project and updates the **index.html** file. It helps developers to manage dependencies required by ABP modules easily.  In order ```bundle``` command to work, its **executing directory** or passed ```--working-directory``` parameter's directory must contain a Blazor project file(*.csproj).
+
+Usage:
+
+````bash
+abp bundle [options]
+````
+
+#### Options
+
+* ```--working-directory``` or ```-wd```: Specifies the working directory. This option is useful when executing directory doesn't contain a Blazor project file.
+* ```--force``` or ```-f```: Forces to build project before generating references.
+
+For more details about managing style and script references in Blazor apps, see [Managing Global Scripts & Styles](UI/Blazor/Global-Scripts-Styles.md)

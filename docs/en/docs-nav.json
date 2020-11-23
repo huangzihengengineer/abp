@@ -567,25 +567,58 @@
               "path": "UI/Blazor/Overall.md"
             },
             {
-              "text": "Services",
+              "text": "Navigation / Menu",
+              "path": "UI/Blazor/Navigation-Menu.md"
+            },
+            {
+              "text": "Localization",
+              "path": "UI/Blazor/Localization.md"
+            },
+            {
+              "text": "Settings",
+              "path": "UI/Blazor/Settings.md"
+            },
+            {
+              "text": "Notification",
+              "path": "UI/Blazor/Notification.md"
+            },
+            {
+              "text": "Message",
+              "path": "UI/Blazor/Message.md"
+            },
+            {
+              "text": "Theming",
+              "path": "UI/Blazor/Theming.md",
               "items": [
                 {
-                  "text": "Localization",
-                  "path": "UI/Blazor/Localization.md"
-                },
-                {
-                  "text": "Settings",
-                  "path": "UI/Blazor/Settings.md"
-                },
-                {
-                  "text": "Notification",
-                  "path": "UI/Blazor/Notification.md"
-                },
-                {
-                  "text": "Message",
-                  "path": "UI/Blazor/Message.md"
+                  "text": "The Basic Theme",
+                  "path": "UI/Blazor/Basic-Theme.md"
                 }
               ]
+            },
+            {
+              "text": "Toolbars",
+              "path": "UI/Blazor/Toolbars.md"
+            },
+            {
+              "text": "Page Alerts",
+              "path": "UI/Blazor/Page-Alerts.md"
+            },
+            {
+              "text": "Branding",
+              "path": "UI/Blazor/Branding.md"
+            },
+            {
+              "text": "Customization / Overriding Components",
+              "path": "UI/Blazor/Customization-Overriding-Components.md"
+            },
+            {
+              "text": "Global Scripts & Styles",
+              "path": "UI/Blazor/Global-Scripts-Styles.md"
+            },
+            {
+              "text": "Authentication",
+              "path": "UI/Blazor/Authentication.md"
             }
           ]
         },
@@ -625,8 +658,8 @@
               "text": "Core Functionality",
               "items": [
                 {
-                  "text": "Config State",
-                  "path": "UI/Angular/Config-State.md"
+                  "text": "Config State Service",
+                  "path": "UI/Angular/Config-State-Service.md"
                 },
                 {
                   "text": "HTTP Requests",
@@ -635,6 +668,10 @@
                 {
                   "text": "Localization",
                   "path": "UI/Angular/Localization.md"
+                },
+                {
+                  "text": "Form Validation",
+                  "path": "UI/Angular/Form-Validation.md"
                 },
                 {
                   "text": "Settings",
